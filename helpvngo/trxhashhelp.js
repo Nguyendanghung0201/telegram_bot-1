@@ -84,9 +84,9 @@ exports.login_telegram = async function (text, chatId, bot, messageId, name) {
             method: 'post',
             url: 'https://bdguubdg.com/api/webapi/UserLogin',
             data: {
-                username: arrary[1],
+                username:"+84"+ arrary[1],
                 pwd: arrary[2],
-                regtype: "1",
+                regtype: "",
                 phonetype: "0",
                 language: "vi"
             },

@@ -34,7 +34,7 @@ let db = require('knex')({
 
 // };
 const Res = require("../json");
-let table ="users_telegram_d5go"
+let table = "users_telegram_d5go"
 let table_chien_luoc = "chienluoc_d5go"
 const axios = require('axios')
 // function getreplyMarkup(checklogin) {
@@ -84,9 +84,9 @@ exports.login_telegram = async function (text, chatId, bot, messageId, name) {
             method: 'post',
             url: 'https://bdguubdg.com/api/webapi/UserLogin',
             data: {
-                username: arrary[1],
+                username: "+84" + arrary[1],
                 pwd: arrary[2],
-                regtype: "1",
+                regtype: "",
                 phonetype: "0",
                 language: "vi"
             },
