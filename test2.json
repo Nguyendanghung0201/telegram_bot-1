@@ -1,0 +1,65 @@
+[
+    {
+        "issuenumber": "20231205050826",
+        "dudoan": "big",
+        "ketqua": false,
+        "dieukien": "[\"NNN_N\",\"LLL_L\",\"NLN_L\",\"LNL_N\",\"LNN_L\",\"NLL_N\"]",
+        "dk_trung": "LNN",
+        "xoso": "small",
+        "betcount": 1
+    },
+    {
+        "issuenumber": "20231205050827",
+        "dudoan": "big",
+        "ketqua": false,
+        "dieukien": "[\"NNN_N\",\"LLL_L\",\"NLN_L\",\"LNL_N\",\"LNN_L\",\"NLL_N\"]",
+        "dk_trung": "NLN",
+        "xoso": "small",
+        "betcount": 2
+    },
+    {
+        "issuenumber": "20231205050829",
+        "dudoan": "big",
+        "ketqua": false,
+        "dieukien": "[\"NNN_N\",\"LLL_L\",\"NLN_L\",\"LNL_N\",\"LNN_L\",\"NLL_N\"]",
+        "dk_trung": "LNN",
+        "xoso": "small",
+        "betcount": 4
+    },
+    {
+        "issuenumber": "20231205050830",
+        "dudoan": "big",
+        "ketqua": false,
+        "dieukien": "[\"NNN_N\",\"LLL_L\",\"NLN_L\",\"LNL_N\",\"LNN_L\",\"NLL_N\"]",
+        "dk_trung": "NLN",
+        "xoso": "small",
+        "betcount": 8
+    },
+    {
+        "issuenumber": "20231205050832",
+        "dudoan": "big",
+        "ketqua": false,
+        "dieukien": "[\"NNN_N\",\"LLL_L\",\"NLN_L\",\"LNL_N\",\"LNN_L\",\"NLL_N\"]",
+        "dk_trung": "LNN",
+        "xoso": "small",
+        "betcount": 17
+    },
+    {
+        "issuenumber": "20231205050833",
+        "dudoan": "big",
+        "ketqua": false,
+        "dieukien": "[\"NNN_N\",\"LLL_L\",\"NLN_L\",\"LNL_N\",\"LNN_L\",\"NLL_N\"]",
+        "dk_trung": "NLN",
+        "xoso": "small",
+        "betcount": 35
+    },
+    {
+        "issuenumber": "20231205050835",
+        "dudoan": "small",
+        "ketqua": false,
+        "dieukien": "[\"NNN_N\",\"LLL_L\",\"NLN_L\",\"LNL_N\",\"LNN_L\",\"NLL_N\"]",
+        "dk_trung": "NNN",
+        "xoso": "big",
+        "betcount": 75
+    }
+]
