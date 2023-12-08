@@ -75,6 +75,8 @@ async function test(bot) {
         }
     }catch(e){
         console.log('loi ', e)
+        await delay(5000)
+        test(bot)
     }
     
    

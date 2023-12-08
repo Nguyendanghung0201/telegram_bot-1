@@ -67,7 +67,22 @@ async function test(bot) {
             let { datalist } = data.data.data
     
             let data_1phut = datalist.filter(e => e.Type == 8)[0]
-            runAtFutureTime(data_1phut.EndTime, data_1phut.ServiceTime, data_1phut.IssueNumber, bot);
+            const timeToWait = data_1phut.EndTime - data_1phut.ServiceTime;
+            if (timeToWait > 4000 && first_time) {
+                //  gọi hàm đặt cược
+
+                await check_dk(data_1phut.IssueNumber, bot)
+            }
+            if (timeToWait > 0) {
+                first_time = true
+                // Sử dụng setTimeout để đợi đến thời gian cụ thể
+                setTimeout(function () {
+                    test(bot)
+                }, timeToWait + 30000);
+            } else {
+                // Nếu timestamp đã qua, bạn có thể xử lý ở đây nếu cần
+                test(bot)
+            }
         }else{
             setTimeout(function () {
                 test(bot)
@@ -75,6 +90,8 @@ async function test(bot) {
         }
     }catch(e){
         console.log('loi ', e)
+        await delay(5000)
+        test(bot)
     }
     
    

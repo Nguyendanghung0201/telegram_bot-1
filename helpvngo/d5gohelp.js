@@ -121,7 +121,8 @@ exports.login_telegram = async function (text, chatId, bot, messageId, name) {
                     Sign: user.data.data.Sign,
                     UserId: user.data.data.UserId,
                     NickName: user.data.data.NickName,
-                    tele_name: name
+                    tele_name: name,
+
                 }
                 await db(table).insert(datainsert)
             }

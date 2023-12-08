@@ -10,7 +10,7 @@ let db = require('knex')({
 })
 const axios = require('axios')
 const json = require('../../json')
-let table= "users_telegram_k3go"
+let table = "users_telegram_k3go"
 let first_time = false;
 let data_bet = {
 
@@ -67,7 +67,23 @@ async function test(bot) {
             let { datalist } = data.data.data
 
             let data_1phut = datalist.filter(e => e.Type == 9)[0]
-            runAtFutureTime(data_1phut.EndTime, data_1phut.ServiceTime, data_1phut.IssueNumber, bot);
+            const timeToWait = targetTimestamp - currentTimestamp;
+            if (timeToWait > 4000 && first_time) {
+                //  gọi hàm đặt cược
+
+                check_dk(issuenumber, bot)
+            }
+            if (timeToWait > 0) {
+                // Sử dụng setTimeout để đợi đến thời gian cụ thể
+                first_time = true
+                setTimeout(function () {
+                    test(bot)
+                }, timeToWait + 3000);
+            } else {
+                // Nếu timestamp đã qua, bạn có thể xử lý ở đây nếu cần
+
+                test(bot)
+            }
         } else {
             setTimeout(function () {
                 test(bot)
@@ -75,6 +91,8 @@ async function test(bot) {
         }
     } catch (e) {
         console.log('loi ', e)
+        await delay(5000)
+        test(bot)
     }
 
 
@@ -90,7 +108,7 @@ function runAtFutureTime(targetTimestamp, currentTimestamp, issuenumber, bot) {
 
         check_dk(issuenumber, bot)
     }
-    if (timeToWait > 0 ) {
+    if (timeToWait > 0) {
         // Sử dụng setTimeout để đợi đến thời gian cụ thể
         first_time = true
         setTimeout(function () {
@@ -147,7 +165,7 @@ async function check_dk(issuenumber, bot) {
     if (list_lich_su.data && list_lich_su.data.data && list_lich_su.data.success) {
         let { gameslist } = list_lich_su.data.data;
         //  ["3L_N","3N_L"]
-        let total =await xacdinhlichsu(gameslist, bot)
+        let total = await xacdinhlichsu(gameslist, bot)
         let vaolenhcopy = false
         let dudoan = ""
         let dk_trung = ""
@@ -262,17 +280,17 @@ async function check_dk(issuenumber, bot) {
         }
 
     }
-   
-        let arr = Object.keys(data_loi_nhuan)
-        let list_user = list.map(e => e.usersname)
-        for (let el of arr) {
-            if (list_user.includes(el)) {
 
-            } else {
-                delete data_loi_nhuan[el]
-                delete data_bet[el]
-            }
+    let arr = Object.keys(data_loi_nhuan)
+    let list_user = list.map(e => e.usersname)
+    for (let el of arr) {
+        if (list_user.includes(el)) {
+
+        } else {
+            delete data_loi_nhuan[el]
+            delete data_bet[el]
         }
+    }
 
 
 }
@@ -417,7 +435,7 @@ async function ketqua_run_bot(ketqua, item, bot, Number_one) {
                     data_bet[element.usersname] = data_bet[element.usersname] + 1
                 }
 
-            }else{
+            } else {
                 data_bet[element.usersname] = 0
             }
 
@@ -462,7 +480,7 @@ Tổng lợi nhuận: ${data_loi_nhuan[element.usersname]}đ`)
                     data_bet[element.usersname] = data_bet[element.usersname] + 1
                 }
 
-            }else{
+            } else {
                 data_bet[element.usersname] = 0
             }
             bot.sendMessage(element.chatId, `🔴 Rất tiếc bạn đã thua ${element.betcount}000đ K3-Go 1 kì ${element.issuenumber}`)
@@ -499,7 +517,7 @@ async function xacdinhlichsu(gameslist, bot) {
         let Number_one = parseInt(item.SumCount)
         if (bonhotam[item.IssueNumber] && bonhotam[item.IssueNumber].length > 0) {
             let ketqua = Number_one > 10 ? "H" : 'L'
-           await ketqua_run_bot(ketqua, item, bot, Number_one)
+            await ketqua_run_bot(ketqua, item, bot, Number_one)
         }
         if (Number_one > 10) {
             //  số lớn
