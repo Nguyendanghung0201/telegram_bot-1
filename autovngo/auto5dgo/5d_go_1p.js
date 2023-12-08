@@ -10,7 +10,8 @@ let db = require('knex')({
 })
 const axios = require('axios')
 const json = require('../../json')
-let table= "users_telegram_d5go"
+let table = "users_telegram_d5go"
+let first_time = false;
 let data_bet = {
 
 }
@@ -84,12 +85,13 @@ function runAtFutureTime(targetTimestamp, currentTimestamp, issuenumber, bot) {
     // Tính thời gian cần đợi (tính bằng miligiây)
 
     const timeToWait = targetTimestamp - currentTimestamp;
-    if (timeToWait > 4000) {
+    if (timeToWait > 4000 && first_time) {
         //  gọi hàm đặt cược
 
         check_dk(issuenumber, bot)
     }
     if (timeToWait > 0) {
+        first_time = true
         // Sử dụng setTimeout để đợi đến thời gian cụ thể
         setTimeout(function () {
             test(bot)
@@ -145,7 +147,7 @@ async function check_dk(issuenumber, bot) {
     if (list_lich_su.data && list_lich_su.data.data && list_lich_su.data.success) {
         let { gameslist } = list_lich_su.data.data;
         //  ["3L_N","3N_L"]
-        let total = xacdinhlichsu(gameslist, bot)
+        let total = await xacdinhlichsu(gameslist, bot)
         let vaolenhcopy = false
         let dudoan = ""
         let dk_trung = ""
@@ -238,6 +240,7 @@ async function check_dk(issuenumber, bot) {
                 })
             }
         }
+        await delay(1000)
         for (let item of list) {
             let json = JSON.parse(item.chienluocdata)
 
@@ -259,20 +262,17 @@ async function check_dk(issuenumber, bot) {
         }
 
     }
-    let random = Math.random()
-    if (random > 0.8) {
-        let arr = Object.keys(data_loi_nhuan)
-        let list_user = list.map(e => e.usersname)
-        for (let el of arr) {
-            if (list_user.includes(el)) {
 
-            } else {
-                delete data_loi_nhuan[el]
-                delete data_bet[el]
-            }
+    let arr = Object.keys(data_loi_nhuan)
+    let list_user = list.map(e => e.usersname)
+    for (let el of arr) {
+        if (list_user.includes(el)) {
+
+        } else {
+            delete data_loi_nhuan[el]
+            delete data_bet[el]
         }
     }
-
 
 }
 //  status
@@ -316,24 +316,7 @@ function convertdata(data) {
     }
     return text
 }
-// uid: 245906
-// sign: 34880B75749433B82F161E60998F716BC3E3091A7A2173FC74A49874E2309D43
-// amount: 10000
-// betcount: 1
-// gametype: 6
-// selecttype: H
-// typeid: 5
-// issuenumber: 20231130050563
-// language: vi
-// uid: 245906
-// sign: 34880B75749433B82F161E60998F716BC3E3091A7A2173FC74A49874E2309D43
-// amount: 1000
-// betcount: 1
-// gametype: 1
-// selecttype: H
-// typeid: 5
-// issuenumber: 20231130050565
-// language: vi
+
 async function vaolenhtaikhoan(item, element, issuenumber, bot) {
     let last = element.slice(element.length - 1, element.length)
     let chienluoc_von = item.chienluoc.split(',')
@@ -428,7 +411,7 @@ async function ketqua_run_bot(ketqua, item, bot, Number_one) {
                     data_bet[element.usersname] = data_bet[element.usersname] + 1
                 }
 
-            }else{
+            } else {
                 data_bet[element.usersname] = 0
             }
 
@@ -473,7 +456,7 @@ Tổng lợi nhuận: ${data_loi_nhuan[element.usersname]}đ`)
                     data_bet[element.usersname] = data_bet[element.usersname] + 1
                 }
 
-            }else{
+            } else {
                 data_bet[element.usersname] = 0
             }
             bot.sendMessage(element.chatId, `🔴 Rất tiếc bạn đã thua ${element.betcount}000đ 5D-Go 1 kì ${element.issuenumber}`)
@@ -504,13 +487,13 @@ Tổng lợi nhuận: ${data_loi_nhuan[element.usersname]}đ`)
     }
     delete bonhotam[item.IssueNumber]
 }
-function xacdinhlichsu(gameslist, bot) {
+async function xacdinhlichsu(gameslist, bot) {
     let total = "";
     for (let item of gameslist) {
         let Number_one = parseInt(item.SumCount)
         if (bonhotam[item.IssueNumber] && bonhotam[item.IssueNumber].length > 0) {
             let ketqua = Number_one > 22 ? "H" : 'L'
-            ketqua_run_bot(ketqua, item, bot, Number_one)
+            await ketqua_run_bot(ketqua, item, bot, Number_one)
         }
         if (Number_one > 22) {
             //  số lớn

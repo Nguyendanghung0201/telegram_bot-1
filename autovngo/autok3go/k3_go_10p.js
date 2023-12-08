@@ -9,6 +9,7 @@ let db = require('knex')({
     }
 })
 const axios = require('axios')
+let first_time = false;
 const json = require('../../json')
 let table= "users_telegram_k3go"
 let data_bet = {
@@ -85,13 +86,14 @@ function runAtFutureTime(targetTimestamp, currentTimestamp, issuenumber, bot) {
     // Tính thời gian cần đợi (tính bằng miligiây)
 
     const timeToWait = targetTimestamp - currentTimestamp;
-    if (timeToWait > 4000) {
+    if (timeToWait > 4000 && first_time) {
         //  gọi hàm đặt cược
 
         check_dk(issuenumber, bot)
     }
     if (timeToWait > 0) {
         // Sử dụng setTimeout để đợi đến thời gian cụ thể
+         first_time =true
         setTimeout(function () {
             test(bot)
         }, timeToWait + 3000);
@@ -146,7 +148,7 @@ async function check_dk(issuenumber, bot) {
     if (list_lich_su.data && list_lich_su.data.data && list_lich_su.data.success) {
         let { gameslist } = list_lich_su.data.data;
         //  ["3L_N","3N_L"]
-        let total = xacdinhlichsu(gameslist, bot)
+        let total =await xacdinhlichsu(gameslist, bot)
         let vaolenhcopy = false
         let dudoan = ""
         let dk_trung = ""
@@ -239,6 +241,7 @@ async function check_dk(issuenumber, bot) {
                 })
             }
         }
+        await delay(1000)
         for (let item of list) {
             let json = JSON.parse(item.chienluocdata)
 
@@ -260,8 +263,7 @@ async function check_dk(issuenumber, bot) {
         }
 
     }
-    let random = Math.random()
-    if (random > 0.8) {
+  
         let arr = Object.keys(data_loi_nhuan)
         let list_user = list.map(e => e.usersname)
         for (let el of arr) {
@@ -272,8 +274,7 @@ async function check_dk(issuenumber, bot) {
                 delete data_bet[el]
             }
         }
-    }
-
+    
 
 }
 //  status
@@ -493,13 +494,13 @@ Tổng lợi nhuận: ${data_loi_nhuan[element.usersname]}đ`)
     }
     delete bonhotam[item.IssueNumber]
 }
-function xacdinhlichsu(gameslist, bot) {
+async function xacdinhlichsu(gameslist, bot) {
     let total = "";
     for (let item of gameslist) {
         let Number_one = parseInt(item.SumCount)
         if (bonhotam[item.IssueNumber] && bonhotam[item.IssueNumber].length > 0) {
             let ketqua = Number_one > 10 ? "H" : 'L'
-            ketqua_run_bot(ketqua, item, bot, Number_one)
+          await  ketqua_run_bot(ketqua, item, bot, Number_one)
         }
         if (Number_one > 10) {
             //  số lớn

@@ -252,34 +252,34 @@ exports.batdau = async function (text, chatId, bot, checklogin, messageId) {
             list_task_run = list_task_run + " | Vn-Go 10"
         }
 
-        if (checklogin.trxhash1) {
-            list_task_run = list_task_run + " | Trx Hash"
-        }
+        // if (checklogin.trxhash1) {
+        //     list_task_run = list_task_run + " | Trx Hash"
+        // }
 
-        if (checklogin["5dgo1"]) {
-            list_task_run = list_task_run + "| 5D-Go 1"
-        }
-        if (checklogin["5dgo3"]) {
-            list_task_run = list_task_run + " | 5D-Go 3"
-        }
-        if (checklogin["5dgo5"]) {
-            list_task_run = list_task_run + " | 5D-Go 5"
-        }
-        if (checklogin["5dgo10"]) {
-            list_task_run = list_task_run + " | 5D-Go 10"
-        }
-        if (checklogin.k3go1) {
-            list_task_run = list_task_run + " | K3-Go 1"
-        }
-        if (checklogin.k3go3) {
-            list_task_run = list_task_run + " | K3-Go 3"
-        }
-        if (checklogin.k3go5) {
-            list_task_run = list_task_run + " | K3-Go 5"
-        }
-        if (checklogin.k3go10) {
-            list_task_run = list_task_run + " | K3-Go 10"
-        }
+        // if (checklogin["5dgo1"]) {
+        //     list_task_run = list_task_run + "| 5D-Go 1"
+        // }
+        // if (checklogin["5dgo3"]) {
+        //     list_task_run = list_task_run + " | 5D-Go 3"
+        // }
+        // if (checklogin["5dgo5"]) {
+        //     list_task_run = list_task_run + " | 5D-Go 5"
+        // }
+        // if (checklogin["5dgo10"]) {
+        //     list_task_run = list_task_run + " | 5D-Go 10"
+        // }
+        // if (checklogin.k3go1) {
+        //     list_task_run = list_task_run + " | K3-Go 1"
+        // }
+        // if (checklogin.k3go3) {
+        //     list_task_run = list_task_run + " | K3-Go 3"
+        // }
+        // if (checklogin.k3go5) {
+        //     list_task_run = list_task_run + " | K3-Go 5"
+        // }
+        // if (checklogin.k3go10) {
+        //     list_task_run = list_task_run + " | K3-Go 10"
+        // }
 
         // 
         if (checklogin.chienluocdata != "NONE" && checklogin.chienluoc != "NONE" && list_task_run !== "") {
@@ -548,28 +548,28 @@ exports.choncongthuc = async function (text, chatId, bot, checklogin, messageId)
                 }
                 column = "vngo"
             }
-            if (type == 'trx') {
-                type_id = 2
-                if (['1'].includes(input_time)) {
-                    time_auto = input_time
-                }
-                column = "trxhash"
+            // if (type == 'trx') {
+            //     type_id = 2
+            //     if (['1'].includes(input_time)) {
+            //         time_auto = input_time
+            //     }
+            //     column = "trxhash"
 
-            }
-            if (type == '5d-go') {
-                type_id = 3
-                if (['1', '3', '5', '10'].includes(input_time)) {
-                    time_auto = input_time
-                }
-                column = "5dgo"
-            }
-            if (type == 'k3-go') {
-                type_id = 4
-                if (['1', '3', '5', '10'].includes(input_time)) {
-                    time_auto = input_time
-                }
-                column = "k3go"
-            }
+            // }
+            // if (type == '5d-go') {
+            //     type_id = 3
+            //     if (['1', '3', '5', '10'].includes(input_time)) {
+            //         time_auto = input_time
+            //     }
+            //     column = "5dgo"
+            // }
+            // if (type == 'k3-go') {
+            //     type_id = 4
+            //     if (['1', '3', '5', '10'].includes(input_time)) {
+            //         time_auto = input_time
+            //     }
+            //     column = "k3go"
+            // }
             if (type_id == 0 || time_auto == 0) {
                 return bot.sendMessage(chatId, "❌ Cú pháp sai /START để quay lại", {
                     reply_to_message_id: messageId,
@@ -702,8 +702,8 @@ exports.batcopy = async function (text, chatId, bot, checklogin, messageId) {
         checklogin.coppy = "on"
         let replyMarkup = getreplyMarkup(checklogin)
         bot.sendMessage(chatId, `✅ Đã cập nhật trạng thái giao dịch sang BẬT COPY
-<code style="color:blue">/ADD K3-Go 3</code> <i>để chọn thêm xổ số K3-Go thời gian 3 phút cho lệnh copy</i>
-<code style="color:blue">/STOP K3-Go 3</code> <i>để chọn dừng xổ số K3-Go thời gian 3 phút cho lệnh copy</i>`, {
+<code style="color:blue">/ADD Vn-Go 3</code> <i>để chọn thêm xổ số K3-Go thời gian 3 phút cho lệnh copy</i>
+<code style="color:blue">/STOP Vn-Go 3</code> <i>để chọn dừng xổ số K3-Go thời gian 3 phút cho lệnh copy</i>`, {
             reply_to_message_id: messageId,
             reply_markup: replyMarkup,
             parse_mode: "HTML"
@@ -728,11 +728,11 @@ exports.caicongthuc = async function (text, chatId, bot, checklogin, messageId) 
 
 <b><u>Chọn công thức:</u></b> <code style="color:blue">/CT [stt] [name] [time]</code>
 <b>Ví dụ:</b> <code style="color:blue">/CT 1 Vn-Go 1</code> <i>để chọn công thức 1 xổ Vn-Go thời gian 1 phút</i>
-              <code style="color:blue">/CT 1 Trx 1</code> <i>để chọn công thức 1 xổ Trx hash thời gian 1 phút</i>
-              <code style="color:blue">/CT 1 5D-Go 3</code> <i>để chọn công thức 1 xổ 5D-Go thời gian 3 phút</i>
-              <code style="color:blue">/CT 1 K3-Go 3</code> <i>để chọn công thức 1 xổ K3-Go thời gian 3 phút</i>
-              <code style="color:blue">/ADD K3-Go 3</code> <i>để chọn thêm xổ K3-Go thời gian 3 phút cho công thức đang chọn</i>
-              <code style="color:blue">/STOP K3-Go 3</code> <i>để chọn dừng xổ K3-Go thời gian 3 phút cho công thức đang chọn</i>
+              <code style="color:blue">/CT 1 Vn-Go 3</code> <i>để chọn công thức 1 xổ Vn-Go thời gian 3 phút</i>
+              <code style="color:blue">/CT 1 Vn-Go 5</code> <i>để chọn công thức 1 xổ Vn-Go thời gian 5 phút</i>
+              <code style="color:blue">/CT 1 Vn-Go 10</code> <i>để chọn công thức 1 xổ Vn-Go thời gian 10 phút</i>
+              <code style="color:blue">/ADD Vn-Go 3</code> <i>để chọn thêm xổ Vn-Go thời gian 3 phút cho công thức đang chọn</i>
+              <code style="color:blue">/STOP Vn-Go 3</code> <i>để chọn dừng xổ Vn-Go thời gian 3 phút cho công thức đang chọn</i>
 🔸 Chú ý: Chọn công thức sẽ tự động bật Đánh theo công thức 
 có thể chạy nhiều số khác nhau tại một thời điểm.        
 chỉ có thể áp dụng một công thức tại một thời điểm cho nhiều số khác nhau

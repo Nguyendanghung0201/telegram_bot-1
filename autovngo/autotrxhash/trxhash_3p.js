@@ -9,9 +9,9 @@ let db = require('knex')({
     }
 })
 const axios = require('axios')
-let first_time = false;
 const json = require('../../json')
-let table= "users_telegram_vngo"
+let first_time = false;
+let table = "users_telegram_trxhash"
 let data_bet = {
 
 }
@@ -21,14 +21,15 @@ let bonhotam = {
 let data_loi_nhuan = {
 
 }
+
 let chienluocvon_index = 0
 let phien_thu = []
 
 async function guigaytoicacuser(bot, len) {
-    let list = await db(table).select("*").where('doigay', 'on').andWhere('vngo5', 1)
-    await db(table).update('doigay', 'off').where('doigay', 'on').andWhere('vngo5', 1)
+    let list = await db(table).select("*").where('doigay', 'on').andWhere('trxhash3', 1)
+    await db(table).update('doigay', 'off').where('doigay', 'on').andWhere('trxhash3', 1)
     for (let el of list) {
-        bot.sendMessage(el.chatId, `🔂 Tín hiệu đã gãy VN-GO 5 phút, bắt đầu copy tín hiệu
+        bot.sendMessage(el.chatId, `🔂 Tín hiệu đã gãy TRX Hash 3 phút, bắt đầu copy tín hiệu
 Entry: 0
 Len: ${len}`)
         await delay(300)
@@ -50,32 +51,44 @@ async function tonghopphien(data, tinhieu, gay) {
         lo: lo.toString(),
         tinhieu: tinhieu,
         gay: gay,
-        type: 'vngo5'
+        type: 'trxhash3'
     })
 
 }
 async function test(bot) {
-
     try {
-        let data = await axios.post("https://bdguubdg.com/api/webapi/GetGameIssueList", {
-            type: 1,
+        let data = await axios.post("https://bdguubdg.com/api/webapi/GetTRXGameIssue", {
+            typeid: 14,
             language: "vi"
         }, {
             headers: { 'content-type': 'application/x-www-form-urlencoded' },
         })
-        if (data.data && data.data.success) {
-            let { datalist } = data.data.data
-            let data_1phut = datalist.filter(e => e.Type == 3)[0]
-            runAtFutureTime(data_1phut.EndTime, data_1phut.ServiceTime, data_1phut.IssueNumber, bot);
+        if (data.data) {
+            if (data.data.success) {
+
+                let data_1phut = data.data.data
+                let time = data_1phut.StartTime
+                let timestamp_start = new Date(time).getTime();
+
+                let EndTime = timestamp_start + 60000*3
+                let ServiceTime = new Date(data_1phut.ServiceTime).getTime();
+
+                runAtFutureTime(EndTime, ServiceTime, data_1phut.IssueNumber, bot);
+            } else {
+                setTimeout(function () {
+                    test(bot)
+                }, 60000);
+            }
+
         } else {
             setTimeout(function () {
                 test(bot)
             }, 60000);
         }
+
     } catch (e) {
         console.log('loi ', e)
     }
-
 
 
 
@@ -92,10 +105,10 @@ function runAtFutureTime(targetTimestamp, currentTimestamp, issuenumber, bot) {
     }
     if (timeToWait > 0) {
         // Sử dụng setTimeout để đợi đến thời gian cụ thể
-        first_time =true
+        first_time=true
         setTimeout(function () {
             test(bot)
-        }, timeToWait + 5000);
+        }, timeToWait + 3000);
     } else {
         // Nếu timestamp đã qua, bạn có thể xử lý ở đây nếu cần
 
@@ -107,22 +120,23 @@ async function check_dk(issuenumber, bot) {
     let list = await db(table).select("*")
         .where("status", 1)
         .andWhere('chienluoc_id', '<>', 0)
-        .andWhere("vngo5", 1)
+        .andWhere("trxhash3", 1)
         .andWhere("chienluocdata", "<>", "NONE")
         .andWhere("chienluoc", "<>", "NONE")
         .andWhere("activeacc", 1)
     //  .where('status_trade', 1)
 
+
     let list2 = await db(table).select("*")
         .where("status", 1)
         .andWhere('coppy', "on")
-        .andWhere("vngo5", 1)
+        .andWhere("trxhash3", 1)
         .andWhere("doigay", "off")
         .andWhere("chienluoc", "<>", "NONE")
-        .andWhere("chienluocdata","NONE")
+        .andWhere("chienluocdata", "NONE")
         .andWhere("activeacc", 1)
 
-    let data_copy = await db('copytinhieu_vngo').select('*').where('status', 1).first()
+    let data_copy = await db('copytinhieu_trxhash').select('*').where('status', 1).first()
     if (data_copy) {
         let list_copy = list2.map(e => {
             e.chienluoc_id = 100
@@ -135,8 +149,8 @@ async function check_dk(issuenumber, bot) {
     }
 
 
-    let list_lich_su = await axios.post("https://bdguubdg.com/api/webapi/GetNoaverageEmerdList", {
-        typeid: 3,
+    let list_lich_su = await axios.post("https://bdguubdg.com/api/webapi/GetTRXNoaverageEmerdList", {
+        typeid: 14,
         pageno: 1,
         language: "vi"
     }, {
@@ -145,10 +159,10 @@ async function check_dk(issuenumber, bot) {
 
 
     if (list_lich_su.data && list_lich_su.data.data && list_lich_su.data.success) {
+
         let { gameslist } = list_lich_su.data.data;
         //  ["3L_N","3N_L"]
-        let total =await xacdinhlichsu(gameslist, bot)
-
+        let total = await xacdinhlichsu(gameslist, bot)
         let vaolenhcopy = false
         let dudoan = ""
         let dk_trung = ""
@@ -253,6 +267,7 @@ async function check_dk(issuenumber, bot) {
                 if (check === check2) {
                     //  đúng dk
                     // vào lệnh
+
                     vaolenhtaikhoan(item, element, issuenumber, bot)
                     break
                 }
@@ -262,17 +277,20 @@ async function check_dk(issuenumber, bot) {
         }
 
     }
-  
-        let arr = Object.keys(data_loi_nhuan)
-        let list_user = list.map(e => e.usersname)
-        for (let el of arr) {
-            if (list_user.includes(el)) {
+    let arr = Object.keys(data_loi_nhuan)
+    let list_user = list.map(e => e.usersname)
 
-            } else {
-                delete data_loi_nhuan[el]
-                delete data_bet[el]
-            }
+    for (let el of arr) {
+        if (list_user.includes(el)) {
+
+        } else {
+
+            delete data_loi_nhuan[el]
+            delete data_bet[el]
         }
+    }
+
+
 
 }
 //  status
@@ -319,14 +337,16 @@ function convertdata(data) {
 async function vaolenhtaikhoan(item, element, issuenumber, bot) {
     let last = element.slice(element.length - 1, element.length)
     let chienluoc_von = item.chienluoc.split(',')
+
     if (!data_bet[item.usersname]) {
         data_bet[item.usersname] = 0
     }
+  
     let data = {
         uid: item.UserId,
         sign: item.Sign,
         gametype: 2,
-        typeid: 3,
+        typeid: 14,
         language: "vi",
         amount: "1000",
         betcount: Math.round(parseInt(chienluoc_von[data_bet[item.usersname]]) / 1000),
@@ -340,9 +360,10 @@ async function vaolenhtaikhoan(item, element, issuenumber, bot) {
         data.selecttype = "big"
     }
 
-    let result = await axios.post("https://bdguubdg.com/api/webapi/GameBetting", data, {
+    let result = await axios.post("https://bdguubdg.com/api/webapi/GameTRXBetting", data, {
         headers: { 'content-type': 'application/x-www-form-urlencoded' },
     })
+
     if (result.data) {
 
         if (result.data && result.data.data && result.data.code == 0 && result.data.success) {
@@ -366,7 +387,7 @@ async function vaolenhtaikhoan(item, element, issuenumber, bot) {
                 bonhotam[issuenumber] = [data]
             }
 
-            bot.sendMessage(item.tele_id, `✅ Đã đặt cược Vn-Go 5 ${data.selecttype == "big" ? "Lớn" : "Nhỏ"} - ${data.betcount}000đ - Kỳ xổ ${issuenumber}`,)
+            bot.sendMessage(item.tele_id, `✅ Đã đặt cược Trx Hash 3 ${data.selecttype == "big" ? "Lớn" : "Nhỏ"} - ${data.betcount}000đ - Kỳ xổ ${issuenumber}`,)
         }
     }
 
@@ -409,12 +430,14 @@ async function ketqua_run_bot(ketqua, item, bot, Number_one) {
                 } else {
                     data_bet[element.usersname] = data_bet[element.usersname] + 1
                 }
+              
+            } else {
 
-            }else{
                 data_bet[element.usersname] = 0
+             
             }
 
-            bot.sendMessage(element.chatId, `🟢 Chúc mừng bạn đã thắng ${Math.round(parseInt(element.betcount) * 0.96 * 1000)}đ Vn-Go 5 kì ${element.issuenumber}
+            bot.sendMessage(element.chatId, `🟢 Chúc mừng bạn đã thắng ${Math.round(parseInt(element.betcount) * 0.96 * 1000)}đ Trx Hash 3 kì ${element.issuenumber}
 Tổng lợi nhuận: ${data_loi_nhuan[element.usersname]}đ`)
             // await db('lichsu_ma').insert({
             //     "uid": element.uid,
@@ -433,7 +456,7 @@ Tổng lợi nhuận: ${data_loi_nhuan[element.usersname]}đ`)
 
                 if (data_loi_nhuan[element.usersname] > element.loidung) {
                     bot.sendMessage(element.chatId, `🟢 Chúc mừng bạn đã đạt tới mức lợi nhuận kỳ vọng để dừng bot`)
-                    await db(table).update('vngo5', 0).where('id', element.id)
+                    await db(table).update('trxhash3', 0).where('id', element.id)
                     delete data_loi_nhuan[element.usersname]
                     delete data_bet[element.usersname]
 
@@ -454,11 +477,13 @@ Tổng lợi nhuận: ${data_loi_nhuan[element.usersname]}đ`)
                 } else {
                     data_bet[element.usersname] = data_bet[element.usersname] + 1
                 }
+             
 
-            }else{
+            } else {
                 data_bet[element.usersname] = 0
+             
             }
-            bot.sendMessage(element.chatId, `🔴 Rất tiếc bạn đã thua ${element.betcount}000đ Vn-Go 5 kì ${element.issuenumber}`)
+            bot.sendMessage(element.chatId, `🔴 Rất tiếc bạn đã thua ${element.betcount}000đ Trx Hash 3 kì ${element.issuenumber}`)
             // await db('lichsu_ma').insert({
             //     "uid": element.uid,
             //     "usersid": element.id,
@@ -476,7 +501,7 @@ Tổng lợi nhuận: ${data_loi_nhuan[element.usersname]}đ`)
                 //  -10000 100000
                 if (data_loi_nhuan[element.usersname] < 0 && Math.abs(data_loi_nhuan[element.usersname]) > element.lodung) {
                     bot.sendMessage(element.chatId, `🔴 Rất tiếc bạn đã thua đến điểm dừng lỗ để dừng bot`)
-                    await db(table).update('vngo5', 0).where('id', element.id)
+                    await db(table).update('trxhash3', 0).where('id', element.id)
                     delete data_loi_nhuan[element.usersname]
                     delete data_bet[element.usersname]
                 }
@@ -492,7 +517,7 @@ async function xacdinhlichsu(gameslist, bot) {
         let Number_one = parseInt(item.Number)
         if (bonhotam[item.IssueNumber] && bonhotam[item.IssueNumber].length > 0) {
             let ketqua = Number_one > 4 ? "big" : 'small'
-          await  ketqua_run_bot(ketqua, item, bot, Number_one)
+            await ketqua_run_bot(ketqua, item, bot, Number_one)
         }
         if (Number_one > 4) {
             //  số lớn

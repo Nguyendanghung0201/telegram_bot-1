@@ -47,12 +47,14 @@ bot.on('message', async (msg) => {
     const messageId = msg.message_id;
     // send a message to the chat acknowledging receipt of their message
     let text = msg.text ? msg.text : false
-    if (type == 'group') {
+   
+    if (type == 'group' || type =="supergroup") {
         if (text) {
+           
             let check = text[0]
-            if (check == '/') {
-
-                return adminGroup.admingroup(chatId, msg, text, bot, messageId,"users_telegram_k3vngo" ,"copytinhieu_k3go")
+            if (chatId ==-1001899737741 && (check == '/' || check=="A") ) {
+                 
+                return adminGroup.admingroup(chatId, msg, text, bot, messageId,"users_telegram_k3go" ,"copytinhieu_k3go")
             }
         }
         return

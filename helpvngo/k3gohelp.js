@@ -238,35 +238,35 @@ exports.batdau = async function (text, chatId, bot, checklogin, messageId) {
         let text_chienluoc = "TẮT";
         let text_cong_thuc = ""
 
-        if (checklogin.vngo1) {
-            list_task_run = list_task_run + "| Vn-Go 1"
-        }
-        if (checklogin.vngo3) {
-            list_task_run = list_task_run + " | Vn-Go 3"
-        }
-        if (checklogin.vngo5) {
-            list_task_run = list_task_run + " | Vn-Go 5"
-        }
-        if (checklogin.vngo10) {
-            list_task_run = list_task_run + " | Vn-Go 10"
-        }
+        // if (checklogin.vngo1) {
+        //     list_task_run = list_task_run + "| Vn-Go 1"
+        // }
+        // if (checklogin.vngo3) {
+        //     list_task_run = list_task_run + " | Vn-Go 3"
+        // }
+        // if (checklogin.vngo5) {
+        //     list_task_run = list_task_run + " | Vn-Go 5"
+        // }
+        // if (checklogin.vngo10) {
+        //     list_task_run = list_task_run + " | Vn-Go 10"
+        // }
 
-        if (checklogin.trxhash1) {
-            list_task_run = list_task_run + " | Trx Hash"
-        }
+        // if (checklogin.trxhash1) {
+        //     list_task_run = list_task_run + " | Trx Hash"
+        // }
 
-        if (checklogin["5dgo1"]) {
-            list_task_run = list_task_run + "| 5D-Go 1"
-        }
-        if (checklogin["5dgo3"]) {
-            list_task_run = list_task_run + " | 5D-Go 3"
-        }
-        if (checklogin["5dgo5"]) {
-            list_task_run = list_task_run + " | 5D-Go 5"
-        }
-        if (checklogin["5dgo10"]) {
-            list_task_run = list_task_run + " | 5D-Go 10"
-        }
+        // if (checklogin["5dgo1"]) {
+        //     list_task_run = list_task_run + "| 5D-Go 1"
+        // }
+        // if (checklogin["5dgo3"]) {
+        //     list_task_run = list_task_run + " | 5D-Go 3"
+        // }
+        // if (checklogin["5dgo5"]) {
+        //     list_task_run = list_task_run + " | 5D-Go 5"
+        // }
+        // if (checklogin["5dgo10"]) {
+        //     list_task_run = list_task_run + " | 5D-Go 10"
+        // }
         if (checklogin.k3go1) {
             list_task_run = list_task_run + " | K3-Go 1"
         }
@@ -540,28 +540,28 @@ exports.choncongthuc = async function (text, chatId, bot, checklogin, messageId)
             let time_auto = 0
             let type_id = 0
             let column = ""
-            if (type == 'vn-go') {
-                type_id = 1
-                if (['1', '3', '5', '10'].includes(input_time)) {
-                    time_auto = input_time
-                }
-                column = "vngo"
-            }
-            if (type == 'trx') {
-                type_id = 2
-                if (['1'].includes(input_time)) {
-                    time_auto = input_time
-                }
-                column = "trxhash"
+            // if (type == 'vn-go') {
+            //     type_id = 1
+            //     if (['1', '3', '5', '10'].includes(input_time)) {
+            //         time_auto = input_time
+            //     }
+            //     column = "vngo"
+            // }
+            // if (type == 'trx') {
+            //     type_id = 2
+            //     if (['1'].includes(input_time)) {
+            //         time_auto = input_time
+            //     }
+            //     column = "trxhash"
 
-            }
-            if (type == '5d-go') {
-                type_id = 3
-                if (['1', '3', '5', '10'].includes(input_time)) {
-                    time_auto = input_time
-                }
-                column = "5dgo"
-            }
+            // }
+            // if (type == '5d-go') {
+            //     type_id = 3
+            //     if (['1', '3', '5', '10'].includes(input_time)) {
+            //         time_auto = input_time
+            //     }
+            //     column = "5dgo"
+            // }
             if (type == 'k3-go') {
                 type_id = 4
                 if (['1', '3', '5', '10'].includes(input_time)) {
@@ -726,10 +726,9 @@ exports.caicongthuc = async function (text, chatId, bot, checklogin, messageId) 
     let congthuc = `<b>CÀI CÔNG THỨC</b>
 
 <b><u>Chọn công thức:</u></b> <code style="color:blue">/CT [stt] [name] [time]</code>
-<b>Ví dụ:</b> <code style="color:blue">/CT 1 Vn-Go 1</code> <i>để chọn công thức 1 xổ Vn-Go thời gian 1 phút</i>
-              <code style="color:blue">/CT 1 Trx 1</code> <i>để chọn công thức 1 xổ Trx hash thời gian 1 phút</i>
-              <code style="color:blue">/CT 1 5D-Go 3</code> <i>để chọn công thức 1 xổ 5D-Go thời gian 3 phút</i>
+<b>Ví dụ:</b> <code style="color:blue">/CT 1 K3-Go 1</code> <i>để chọn công thức 1 xổ K3-Go thời gian 1 phút</i>
               <code style="color:blue">/CT 1 K3-Go 3</code> <i>để chọn công thức 1 xổ K3-Go thời gian 3 phút</i>
+              <code style="color:blue">/CT 1 K3-Go 5</code> <i>để chọn công thức 1 xổ K3-Go thời gian 5 phút</i>
               <code style="color:blue">/ADD K3-Go 3</code> <i>để chọn thêm xổ K3-Go thời gian 3 phút cho công thức đang chọn</i>
               <code style="color:blue">/STOP K3-Go 3</code> <i>để chọn dừng xổ K3-Go thời gian 3 phút cho công thức đang chọn</i>
 🔸 Chú ý: Chọn công thức sẽ tự động bật Đánh theo công thức 

@@ -3,6 +3,9 @@ const TelegramBot = require('node-telegram-bot-api');
 
 
 const TrxHash = require("./autovngo/autotrxhash/trxhash_1p")
+const TrxHash3 = require("./autovngo/autotrxhash/trxhash_3p")
+const TrxHash5 = require("./autovngo/autotrxhash/trxhash_5p")
+const TrxHash10 = require("./autovngo/autotrxhash/trxhash_10p")
 
 
 const token = '6892138707:AAGz46hXNs1WBzTs0WmjgW6BDkZkl9I8deA';
@@ -46,10 +49,10 @@ bot.on('message', async (msg) => {
     const messageId = msg.message_id;
     // send a message to the chat acknowledging receipt of their message
     let text = msg.text ? msg.text : false
-    if (type == 'group') {
+    if (type == 'group' || type =="supergroup") {
         if (text) {
             let check = text[0]
-            if (check == '/') {
+            if (chatId ==-1002121629635 && (check == '/' || check=="A") ) {
 
                 return adminGroup.admingroup(chatId, msg, text, bot, messageId,"users_telegram_trxhash" ,"copytinhieu_trxhash")
             }
@@ -319,3 +322,6 @@ bot.on('message', async (msg) => {
 
 TrxHash.runbot(bot)
 
+TrxHash3.runbot(bot)
+TrxHash5.runbot(bot)
+TrxHash10.runbot(bot)

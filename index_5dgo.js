@@ -51,12 +51,21 @@ bot.on('message', async (msg) => {
     const messageId = msg.message_id;
     // send a message to the chat acknowledging receipt of their message
     let text = msg.text ? msg.text : false
-    if (type == 'group') {
+    if (type == 'group' || type == "supergroup") {
         if (text) {
             let check = text[0]
-            if (check == '/') {
+            if (chatId == -1002043847040 && (check == '/' || check == "A")) {
 
-                return adminGroup.admingroup(chatId, msg, text, bot, messageId,"users_telegram_d5go" ,"copytinhieu_d5go")
+                return adminGroup.admingroup(chatId, msg, text, bot, messageId, "users_telegram_d5go", "copytinhieu_d5go")
+            }
+            if (check == '/') {
+                let array = text.split("\n")
+                let key_work = array[0]
+                if (key_work == '/check id') {
+                    return bot.sendMessage(chatId, "ID group là " + chatId, {
+                        reply_to_message_id: messageId
+                    })
+                }
             }
         }
         return
