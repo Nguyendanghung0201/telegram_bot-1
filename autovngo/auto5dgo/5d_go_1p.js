@@ -218,6 +218,7 @@ async function guitinnhantunggroup(gameslist, bot, total, issuenumber) {
                     let chienluocvon_index = 0
                     let session_moi
                     let chienluocvon = JSON.parse(data_copy.chienlucvon)
+                 
                     if (tim_kiem && tim_kiem.length > 0) {
                         if (tim_kiem[0].dudoan == ketqua) {
                             //  ket quả đúng r
@@ -227,7 +228,7 @@ async function guitinnhantunggroup(gameslist, bot, total, issuenumber) {
                                 charset: 'alphabetic'
                             });
                             chienluocvon_index = 0
-
+                          console.log('tong hop phien ',data_copy.id_group)
                             await tonghopphien(data_copy, true, tim_kiem[0], chienluocvon.length, bot)
                             await delay(1000)
 
@@ -244,6 +245,7 @@ async function guitinnhantunggroup(gameslist, bot, total, issuenumber) {
                                 if(data_copy.status ==1){
                                     guigaytoicacuser(chienluocvon.length,bot)
                                 }
+                                console.log('tong hop phien gay ',data_copy.id_group)
                                 await tonghopphien(data_copy, false, tim_kiem[0], chienluocvon.length, bot)
                                 await delay(1000)
                             } else {
@@ -254,6 +256,7 @@ async function guitinnhantunggroup(gameslist, bot, total, issuenumber) {
 
 
                     } else {
+                        console.log('khong tin thay ')
                         session_moi = randomstring.generate({
                             length: 12,
                             charset: 'alphabetic'
