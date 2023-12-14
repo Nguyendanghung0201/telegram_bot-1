@@ -99,7 +99,9 @@ async function tonghopphien(data_copy, gay, tim_kiem, tinhieu, bot) {
 
 ${data_copy.datatext}`
 
-    bot.sendMessage(data_copy.id_group, text)
+    bot.sendMessage(data_copy.id_group, text,{
+        parse_mode: "HTML"
+    })
 }
 
 async function test(bot) {

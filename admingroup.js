@@ -161,10 +161,11 @@ async function setuptinhieugroup(chatId, array, bot, messageId, text, table_copy
     if (check_last == -1) {
         //  ko có last
 
+
     } else {
         let index = 0
         for (let item of array) {
-            if (check_last > index) {
+            if (check_last < index) {
                 datatext = datatext + item + '\n'
             }
             index++
