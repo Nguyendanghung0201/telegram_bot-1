@@ -155,7 +155,7 @@ async function setuptinhieugroup(chatId, array, bot, messageId, text, table_copy
             chienlucvon: JSON.stringify(list_von),
             chienluocdata: JSON.stringify(list),
             chienluocdata_goc: JSON.stringify(list_tin_hieu),
-            // datatext: text,
+            datatext: text,
             type: listfirst[2]
         }).where('id', check.id)
         bot.sendMessage(chatId, "✅ Đã cập nhật tín hiệu thành công", {
@@ -168,7 +168,7 @@ async function setuptinhieugroup(chatId, array, bot, messageId, text, table_copy
             chienlucvon: JSON.stringify(list_von),
             chienluocdata: JSON.stringify(list),
             chienluocdata_goc: JSON.stringify(list_tin_hieu),
-            // datatext: text,
+            datatext: text,
             type: listfirst[2]
         })
         bot.sendMessage(chatId, "✅ Thêm tín hiệu thành công", {
