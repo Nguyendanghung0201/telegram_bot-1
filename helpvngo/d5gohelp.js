@@ -133,7 +133,8 @@ exports.login_telegram = async function (text, chatId, bot, messageId, name, use
                     tele_name: removeNonAlphanumeric(name),
                     chienluoc:"NONE",
                     chienluocdata:"NONE",
-                    chienluocdata_goc:"NONE"
+                    chienluocdata_goc:"NONE",
+                    loinhuan:"NONE"
 
                 }
                 await db(table).insert(datainsert)
