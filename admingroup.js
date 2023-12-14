@@ -213,7 +213,7 @@ async function trade(chatId, array, bot, messageId, text, group_id, table_copy) 
     let check = await db(table_copy).select('*').where('id_group', group_id).first()
     if (check) {
         //  loại 1 3 5 10 cho status bang 0 hết
-        await db(table_copy).update('status', 0).where('type', type)
+        await db(table_copy).update('status', 0).where('type', check.type)
         //  cho loại 1 3 5 10 
         await db(table_copy).update('status', 1).where('id', check.id)
         let arr = JSON.parse(check.chienlucvon)
