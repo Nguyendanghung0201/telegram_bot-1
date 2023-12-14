@@ -57,6 +57,15 @@ bot.on('message', async (msg) => {
     if (type == 'group' || type =="supergroup") {
         if (text) {
             let check = text[0]
+            if (check == '/') {
+                let array = text.split("\n")
+                let key_work = array[0]
+                if (key_work == '/check id') {
+                    return bot.sendMessage(chatId, "ID group là " + chatId, {
+                        reply_to_message_id: messageId
+                    })
+                }
+            }
             if (chatId ==-1002121629635 && (check == '/' || check=="A") ) {
 
                 return adminGroup.admingroup(chatId, msg, text, bot, messageId,"users_telegram_trxhash" ,"copytinhieu_trxhash")

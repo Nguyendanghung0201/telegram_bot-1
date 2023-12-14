@@ -27,7 +27,7 @@ let data_loi_nhuan = {
 let chienluocvon_index = 0
 let phien_thu = []
 
-async function guigaytoicacuser(len,bot) {
+async function guigaytoicacuser(len, bot) {
     let list = await db(table).select("*").where('doigay', 'on').andWhere('5dgo1', 1)
     await db(table).update('doigay', 'off').where('doigay', 'on').andWhere('5dgo1', 1)
     for (let el of list) {
@@ -99,7 +99,7 @@ async function tonghopphien(data_copy, gay, tim_kiem, tinhieu, bot) {
 
 ${data_copy.datatext}`
 
-    bot.sendMessage(data_copy.id_group, text,{
+    bot.sendMessage(data_copy.id_group, text, {
         parse_mode: "HTML"
     })
 }
@@ -183,6 +183,14 @@ async function guitinnhantunggroup(gameslist, bot, total, issuenumber) {
 
 
     await delay(2000)
+    let check_curent = await db("lichsu_ma_group").select('*')
+        .where("issuenumber", issuenumber)
+        .andWhere("type", "1phut")
+        .andWhere("name", "5dgo")
+        .first()
+    if (check_curent) {
+        return
+    }
 
     let list = await db("copytinhieu_d5go").select("*").where('start', 1).andWhere("type", "1")
     for (let data_copy of list) {
@@ -220,7 +228,7 @@ async function guitinnhantunggroup(gameslist, bot, total, issuenumber) {
                     let chienluocvon_index = 0
                     let session_moi
                     let chienluocvon = JSON.parse(data_copy.chienlucvon)
-                 
+
                     if (tim_kiem && tim_kiem.length > 0) {
                         if (tim_kiem[0].dudoan == ketqua) {
                             //  ket quả đúng r
@@ -230,7 +238,7 @@ async function guitinnhantunggroup(gameslist, bot, total, issuenumber) {
                                 charset: 'alphabetic'
                             });
                             chienluocvon_index = 0
-                          console.log('tong hop phien ',data_copy.id_group)
+                            console.log('tong hop phien ', data_copy.id_group)
                             await tonghopphien(data_copy, true, tim_kiem[0], chienluocvon.length, bot)
                             await delay(1000)
 
@@ -244,10 +252,10 @@ async function guitinnhantunggroup(gameslist, bot, total, issuenumber) {
                                     charset: 'alphabetic'
                                 });
                                 chienluocvon_index = 0
-                                if(data_copy.status ==1){
-                                    guigaytoicacuser(chienluocvon.length,bot)
+                                if (data_copy.status == 1) {
+                                    guigaytoicacuser(chienluocvon.length, bot)
                                 }
-                                console.log('tong hop phien gay ',data_copy.id_group)
+                                console.log('tong hop phien gay ', data_copy.id_group)
                                 await tonghopphien(data_copy, false, tim_kiem[0], chienluocvon.length, bot)
                                 await delay(1000)
                             } else {

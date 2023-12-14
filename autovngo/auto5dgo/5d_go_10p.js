@@ -181,7 +181,14 @@ async function guitinnhantunggroup(gameslist, bot, total, issuenumber) {
 
 
     await delay(2000)
-
+    let check_curent = await db("lichsu_ma_group").select('*')
+    .where("issuenumber", issuenumber)
+    .andWhere("type", "10phut")
+    .andWhere("name", "5dgo")
+    .first()
+if (check_curent) {
+    return
+}
     let list = await db("copytinhieu_d5go").select("*").where('start', 1).andWhere("type", "10")
     for (let data_copy of list) {
 

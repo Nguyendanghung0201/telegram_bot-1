@@ -91,12 +91,10 @@ function isNumber(str) {
 async function delay(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
-function removeNonAlphanumeric(inputString) {
-    // Define a regular expression to match non-alphanumeric characters
-    const regex = /[^a-zA-Z0-9À-ÖØ-öø-ÿ -@:\nàáâãäåçèéêëìíîïñòóôõöùúûüýỳỹỷằắẳẵặầấẩẫậồốổỗộờớởỡợ]+/g;
-    return inputString.replace(regex, '');
-  
-    return resultString;
+
+  function removeNonAlphanumeric(inputString) {
+    const regex = /[a-zA-Z0-9À-ỹầấẩẫậằắẳẵặèéêëìíîïòóôõöùúûüỳỹỷ -@:\n]+/gu;
+    return inputString.match(regex).join('');
   }
 async function setuptinhieugroup(chatId, array, bot, messageId, text, table_copy) {
 
@@ -171,6 +169,7 @@ async function setuptinhieugroup(chatId, array, bot, messageId, text, table_copy
 
     }
     let check = await db(table_copy).select('*').where('id_group', group_id).first()
+    console.log('s ',removeNonAlphanumeric(datatext))
     if (check) {
 
         await db(table_copy).update({
