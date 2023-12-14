@@ -809,28 +809,28 @@ exports.addthemso = async function (text, chatId, bot, checklogin, messageId) {
                 }
                 column = "vngo"
             }
-            if (type == 'trx') {
-                type_id = 2
-                if (['1'].includes(input_time)) {
-                    time_auto = input_time
-                }
-                column = "trxhash"
+            // if (type == 'trx') {
+            //     type_id = 2
+            //     if (['1'].includes(input_time)) {
+            //         time_auto = input_time
+            //     }
+            //     column = "trxhash"
 
-            }
-            if (type == '5d-go') {
-                type_id = 3
-                if (['1', '3', '5', '10'].includes(input_time)) {
-                    time_auto = input_time
-                }
-                column = "5dgo"
-            }
-            if (type == 'k3-go') {
-                type_id = 4
-                if (['1', '3', '5', '10'].includes(input_time)) {
-                    time_auto = input_time
-                }
-                column = "k3go"
-            }
+            // }
+            // if (type == '5d-go') {
+            //     type_id = 3
+            //     if (['1', '3', '5', '10'].includes(input_time)) {
+            //         time_auto = input_time
+            //     }
+            //     column = "5dgo"
+            // }
+            // if (type == 'k3-go') {
+            //     type_id = 4
+            //     if (['1', '3', '5', '10'].includes(input_time)) {
+            //         time_auto = input_time
+            //     }
+            //     column = "k3go"
+            // }
             if (type_id == 0 || time_auto == 0) {
                 return bot.sendMessage(chatId, "❌ Cú pháp sai /START để quay lại", {
                     reply_to_message_id: messageId,
@@ -877,28 +877,28 @@ exports.stopthemso = async function (text, chatId, bot, checklogin, messageId) {
                 }
                 column = "vngo"
             }
-            if (type == 'trx') {
-                type_id = 2
-                if (['1'].includes(input_time)) {
-                    time_auto = input_time
-                }
-                column = "trxhash"
+            // if (type == 'trx') {
+            //     type_id = 2
+            //     if (['1'].includes(input_time)) {
+            //         time_auto = input_time
+            //     }
+            //     column = "trxhash"
 
-            }
-            if (type == '5d-go') {
-                type_id = 3
-                if (['1', '3', '5', '10'].includes(input_time)) {
-                    time_auto = input_time
-                }
-                column = "5dgo"
-            }
-            if (type == 'k3-go') {
-                type_id = 4
-                if (['1', '3', '5', '10'].includes(input_time)) {
-                    time_auto = input_time
-                }
-                column = "k3go"
-            }
+            // }
+            // if (type == '5d-go') {
+            //     type_id = 3
+            //     if (['1', '3', '5', '10'].includes(input_time)) {
+            //         time_auto = input_time
+            //     }
+            //     column = "5dgo"
+            // }
+            // if (type == 'k3-go') {
+            //     type_id = 4
+            //     if (['1', '3', '5', '10'].includes(input_time)) {
+            //         time_auto = input_time
+            //     }
+            //     column = "k3go"
+            // }
             if (type_id == 0 || time_auto == 0) {
                 return bot.sendMessage(chatId, "❌ Cú pháp sai /START để quay lại", {
                     reply_to_message_id: messageId,

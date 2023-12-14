@@ -67,7 +67,7 @@ const axios = require('axios')
 //     return replyMarkup
 
 // }
-exports.login_telegram = async function (text, chatId, bot, messageId, name) {
+exports.login_telegram = async function (text, chatId, bot, messageId, name, userLink) {
     let arrary = text.split("\n")
 
     if (arrary.length != 3) {
@@ -125,6 +125,11 @@ exports.login_telegram = async function (text, chatId, bot, messageId, name) {
 
                 }
                 await db(table).insert(datainsert)
+                let userLink2 = userLink ? `@${userLink}` : name;
+                bot.sendMessage(-1002043847040, `
+==> New user: 
+ID: ${chatId}
+Name: ${userLink2}`, { parse_mode: 'Markdown' })
             }
             let Amount = formatNumberWithCommas(user.data.data.Amount)
             let text_chat = `✅ Đăng nhập thành công tài khoản:
@@ -801,21 +806,21 @@ exports.addthemso = async function (text, chatId, bot, checklogin, messageId) {
             let time_auto = 0
             let type_id = 0
             let column = ""
-            if (type == 'vn-go') {
-                type_id = 1
-                if (['1', '3', '5', '10'].includes(input_time)) {
-                    time_auto = input_time
-                }
-                column = "vngo"
-            }
-            if (type == 'trx') {
-                type_id = 2
-                if (['1'].includes(input_time)) {
-                    time_auto = input_time
-                }
-                column = "trxhash"
+            // if (type == 'vn-go') {
+            //     type_id = 1
+            //     if (['1', '3', '5', '10'].includes(input_time)) {
+            //         time_auto = input_time
+            //     }
+            //     column = "vngo"
+            // }
+            // if (type == 'trx') {
+            //     type_id = 2
+            //     if (['1'].includes(input_time)) {
+            //         time_auto = input_time
+            //     }
+            //     column = "trxhash"
 
-            }
+            // }
             if (type == '5d-go') {
                 type_id = 3
                 if (['1', '3', '5', '10'].includes(input_time)) {
@@ -823,13 +828,13 @@ exports.addthemso = async function (text, chatId, bot, checklogin, messageId) {
                 }
                 column = "5dgo"
             }
-            if (type == 'k3-go') {
-                type_id = 4
-                if (['1', '3', '5', '10'].includes(input_time)) {
-                    time_auto = input_time
-                }
-                column = "k3go"
-            }
+            // if (type == 'k3-go') {
+            //     type_id = 4
+            //     if (['1', '3', '5', '10'].includes(input_time)) {
+            //         time_auto = input_time
+            //     }
+            //     column = "k3go"
+            // }
             if (type_id == 0 || time_auto == 0) {
                 return bot.sendMessage(chatId, "❌ Cú pháp sai /START để quay lại", {
                     reply_to_message_id: messageId,
@@ -869,21 +874,21 @@ exports.stopthemso = async function (text, chatId, bot, checklogin, messageId) {
             let time_auto = 0
             let type_id = 0
             let column = ""
-            if (type == 'vn-go') {
-                type_id = 1
-                if (['1', '3', '5', '10'].includes(input_time)) {
-                    time_auto = input_time
-                }
-                column = "vngo"
-            }
-            if (type == 'trx') {
-                type_id = 2
-                if (['1'].includes(input_time)) {
-                    time_auto = input_time
-                }
-                column = "trxhash"
+            // if (type == 'vn-go') {
+            //     type_id = 1
+            //     if (['1', '3', '5', '10'].includes(input_time)) {
+            //         time_auto = input_time
+            //     }
+            //     column = "vngo"
+            // }
+            // if (type == 'trx') {
+            //     type_id = 2
+            //     if (['1'].includes(input_time)) {
+            //         time_auto = input_time
+            //     }
+            //     column = "trxhash"
 
-            }
+            // }
             if (type == '5d-go') {
                 type_id = 3
                 if (['1', '3', '5', '10'].includes(input_time)) {
@@ -891,13 +896,13 @@ exports.stopthemso = async function (text, chatId, bot, checklogin, messageId) {
                 }
                 column = "5dgo"
             }
-            if (type == 'k3-go') {
-                type_id = 4
-                if (['1', '3', '5', '10'].includes(input_time)) {
-                    time_auto = input_time
-                }
-                column = "k3go"
-            }
+            // if (type == 'k3-go') {
+            //     type_id = 4
+            //     if (['1', '3', '5', '10'].includes(input_time)) {
+            //         time_auto = input_time
+            //     }
+            //     column = "k3go"
+            // }
             if (type_id == 0 || time_auto == 0) {
                 return bot.sendMessage(chatId, "❌ Cú pháp sai /START để quay lại", {
                     reply_to_message_id: messageId,

@@ -39,7 +39,12 @@ const replyMarkup = {
 // messages.
 const help = require('./helpvngo/k3gohelp')
 const Res = require("./json");
-
+bot.on('channel_post', (msg) => {
+    if(msg.text =='/check id'){
+        bot.sendMessage(msg.chat.id, "ID group là "+msg.chat.id)
+    }
+  
+});
 bot.on('message', async (msg) => {
 
     let type = msg.chat?.type

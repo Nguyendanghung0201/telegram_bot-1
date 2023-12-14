@@ -88,8 +88,10 @@ function isNumber(str) {
     // !: Phủ định để kiểm tra xem chuỗi không chứa kí tự chữ
     return /^\d*$/.test(str);
 }
-
-async function setuptinhieugroup(chatId, array, bot, messageId, text ,table_copy) {
+async function delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+async function setuptinhieugroup(chatId, array, bot, messageId, text, table_copy) {
 
     let list_tin_hieu = array.filter(e => {
         let check = e == "" ? false : true
@@ -118,7 +120,32 @@ async function setuptinhieugroup(chatId, array, bot, messageId, text ,table_copy
         let text = check3 + "_" + last
         return text
     })
-    let group_id = array[0].replace('/setup_bot', "").trim()
+    let listfirst = array[0].split(' ').filter(e=> e)
+    if (listfirst.length != 3) {
+        return bot.sendMessage(chatId, "❌ Cú pháp sai", {
+            reply_to_message_id: messageId
+        })
+    }
+    if(!['1','3','5','10'].includes(listfirst[2])){
+        return bot.sendMessage(chatId, "❌ Cú pháp sai", {
+            reply_to_message_id: messageId
+        })
+    }
+    let group_id = listfirst[1]
+    let ok_check_chat=false
+    bot.getChat(group_id).then((chatInfo) => {
+      
+        ok_check_chat=true
+    }).catch((error) => {
+       
+    
+    });
+    await delay(1000)
+    if(!ok_check_chat){
+        return bot.sendMessage(chatId, "❌ Vui lòng kiểm tra lại id nhóm tín hiệu", {
+            reply_to_message_id: messageId
+        })
+    }
     let check = await db(table_copy).select('*').where('id_group', group_id).first()
     if (check) {
 
@@ -128,7 +155,8 @@ async function setuptinhieugroup(chatId, array, bot, messageId, text ,table_copy
             chienlucvon: JSON.stringify(list_von),
             chienluocdata: JSON.stringify(list),
             chienluocdata_goc: JSON.stringify(list_tin_hieu),
-            datatext: text
+            datatext: text,
+            type: listfirst[2]
         }).where('id', check.id)
         bot.sendMessage(chatId, "✅ Đã cập nhật tín hiệu thành công", {
             reply_to_message_id: messageId
@@ -140,7 +168,8 @@ async function setuptinhieugroup(chatId, array, bot, messageId, text ,table_copy
             chienlucvon: JSON.stringify(list_von),
             chienluocdata: JSON.stringify(list),
             chienluocdata_goc: JSON.stringify(list_tin_hieu),
-            datatext: text
+            datatext: text,
+            type: listfirst[2]
         })
         bot.sendMessage(chatId, "✅ Thêm tín hiệu thành công", {
             reply_to_message_id: messageId
@@ -151,15 +180,17 @@ async function setuptinhieugroup(chatId, array, bot, messageId, text ,table_copy
 
 }
 
-async function trade(chatId, array, bot, messageId, text, group_id ,table_copy) {
+async function trade(chatId, array, bot, messageId, text, group_id, table_copy, type) {
     if (array.length != 1) {
         return bot.sendMessage(chatId, "❌ Cú pháp sai", {
             reply_to_message_id: messageId
         })
     }
-    let check = await db(table_copy).select('*').where('id_group', group_id).first()
+    let check = await db(table_copy).select('*').where('id_group', group_id).andWhere('type', type).first()
     if (check) {
-        await db(table_copy).update('status', 0)
+        //  loại 1 3 5 10 cho status bang 0 hết
+        await db(table_copy).update('status', 0).where('type', type)
+        //  cho loại 1 3 5 10 
         await db(table_copy).update('status', 1).where('id', check.id)
         let arr = JSON.parse(check.chienlucvon)
         let text_von = arr.toString().replace(',', "-")
@@ -168,22 +199,117 @@ async function trade(chatId, array, bot, messageId, text, group_id ,table_copy) 
         for (let element of data) {
             text_cong_thuc = text_cong_thuc + '<code style="color:blue"> ' + element + '</code>' + '\n'
         }
-        bot.sendMessage(chatId, `✅ Đã cập nhật chiến lược
+        bot.sendMessage(chatId, `✅ Đã bật copy theo tín hiệu
 Bot copy theo setup:
 ${text_cong_thuc}
+Loại tín hiệu : ${el.type} phút
 Quản lý vốn : ${text_von}`, {
             reply_to_message_id: messageId,
             parse_mode: "HTML"
         })
     } else {
-        return bot.sendMessage(chatId, "❌ ID group không đúng", {
+        return bot.sendMessage(chatId, "❌ ID group hoặc loại xổ số không đúng", {
             reply_to_message_id: messageId
         })
     }
 
 }
-async function list(chatId, bot, messageId) {
-    let list = await db("copytinhieu").select("*")
+async function statusGroup(chatId, array, bot, messageId, text, group_id, table_copy){
+    if (array.length != 1) {
+        return bot.sendMessage(chatId, "❌ Cú pháp sai", {
+            reply_to_message_id: messageId
+        })
+    }
+    let check = await db(table_copy).select('*').where('id_group', group_id).first()
+    if (check) {
+        // await db(table_copy).update('start', 1).where('id', check.id)
+        let text_cong_thuc = ""
+        let data = JSON.parse(check.chienluocdata_goc)
+        for (let element of data) {
+            text_cong_thuc = text_cong_thuc + '<code style="color:blue"> ' + element + '</code>' + '\n'
+        }
+        let arr = JSON.parse(check.chienlucvon)
+        let text_von = arr.toString().replace(',', "-")
+        bot.sendMessage(chatId, `✅ Đã bật nhóm tín hiệu
+Tín hiệu theo setup:
+${text_cong_thuc}
+Loại tín hiệu : ${check.type} phút
+Trạng thái: ${ check.start == 1 ? "Đang hoạt động" : " không hoạt động"}
+Group copy: ${check.status == 1 ? "BẬT" :"TẮT"}
+Quản lý vốn : ${text_von}`, {
+            reply_to_message_id: messageId,
+            parse_mode: "HTML"
+        })
+    } else {
+        return bot.sendMessage(chatId, "❌ ID group hoặc loại xổ số không đúng", {
+            reply_to_message_id: messageId
+        })
+    }
+}
+async function startGroup(chatId, array, bot, messageId, text, group_id, table_copy) {
+    if (array.length != 1) {
+        return bot.sendMessage(chatId, "❌ Cú pháp sai", {
+            reply_to_message_id: messageId
+        })
+    }
+    let check = await db(table_copy).select('*').where('id_group', group_id).first()
+    if (check) {
+        await db(table_copy).update('start', 1).where('id', check.id)
+        let text_cong_thuc = ""
+        let data = JSON.parse(check.chienluocdata_goc)
+        for (let element of data) {
+            text_cong_thuc = text_cong_thuc + '<code style="color:blue"> ' + element + '</code>' + '\n'
+        }
+        let arr = JSON.parse(check.chienlucvon)
+        let text_von = arr.toString().replace(',', "-")
+        bot.sendMessage(chatId, `✅ Đã bật nhóm tín hiệu
+Tín hiệu theo setup:
+${text_cong_thuc}
+Loại tín hiệu : ${check.type} phút
+Quản lý vốn : ${text_von}`, {
+            reply_to_message_id: messageId,
+            parse_mode: "HTML"
+        })
+    } else {
+        return bot.sendMessage(chatId, "❌ ID group hoặc loại xổ số không đúng", {
+            reply_to_message_id: messageId
+        })
+    }
+
+}
+
+async function stopGroup(chatId, array, bot, messageId, text, group_id, table_copy) {
+    if (array.length != 1) {
+        return bot.sendMessage(chatId, "❌ Cú pháp sai", {
+            reply_to_message_id: messageId
+        })
+    }
+    let check = await db(table_copy).select('*').where('id_group', group_id).first()
+    if (check) {
+        await db(table_copy).update('start', 0).where('id', check.id)
+        let text_cong_thuc = ""
+        let data = JSON.parse(check.chienluocdata_goc)
+        for (let element of data) {
+            text_cong_thuc = text_cong_thuc + '<code style="color:blue"> ' + element + '</code>' + '\n'
+        }
+        let arr = JSON.parse(check.chienlucvon)
+        let text_von = arr.toString().replace(',', "-")
+        bot.sendMessage(chatId, `✅ Đã tắt nhóm tín hiệu 
+Tín hiệu theo setup:
+${text_cong_thuc}
+Loại tín hiệu : ${check.type} phút
+Quản lý vốn : ${text_von}`, {
+            reply_to_message_id: messageId,
+            parse_mode: "HTML"
+        })
+    } else {
+        return bot.sendMessage(chatId, "❌ ID group hoặc loại xổ số không đúng", {
+            reply_to_message_id: messageId
+        })
+    }
+}
+async function list(chatId, bot, messageId, table_copy) {
+    let list = await db(table_copy).select("*")
     let text = "Danh sách tín hiệu setup:\n"
     for (let el of list) {
         let text_cong_thuc = ""
@@ -193,8 +319,11 @@ async function list(chatId, bot, messageId) {
         }
         let arr = JSON.parse(el.chienlucvon)
         let text_von = arr.toString().replace(',', "-")
-        text = text + `Group ID ${el.id_group} ${el.status == 1 ? "(Đang chọn)" : ""}:
+        text = text + `Group ID ${el.id_group} :
 ${text_cong_thuc}
+Loại tín hiệu : ${el.type} phút
+Trạng thái: ${ el.start == 1 ? "Đang hoạt động" : " không hoạt động"}
+Group copy: ${el.status == 1 ? "BẬT" :"TẮT"}
 QUản lý Vốn: ${text_von}
 `
     }
@@ -203,52 +332,106 @@ QUản lý Vốn: ${text_von}
         parse_mode: "HTML"
     })
 }
-exports.admingroup = async function (chatId, msg, text, bot, messageId,table , table_copy) {
+exports.admingroup = async function (chatId, msg, text, bot, messageId, table, table_copy) {
 
     let array = text.split("\n")
- 
+
     if (array.length > 0) {
 
         let key_work = array[0]
-      
+
         if (key_work.includes('/setup_bot')) {
             array = array.map(e => {
                 return e.trim()
             })
-            return setuptinhieugroup(chatId, array, bot, messageId, text,table_copy)
+            return setuptinhieugroup(chatId, array, bot, messageId, text, table_copy)
         }
         if (key_work.includes('/trade')) {
             array = array.map(e => {
                 return e.trim()
             })
-            let group_id = key_work.replace('/trade', "").trim()
-            return trade(chatId, array, bot, messageId, text, group_id,table_copy)
+            let listfirst = key_work.split(' ')
+            if (listfirst.length != 3) {
+                return bot.sendMessage(chatId, "❌ Cú pháp sai", {
+                    reply_to_message_id: messageId
+                })
+            }
+            let group_id = listfirst[1]
+            let type = listfirst[2]
+
+            return trade(chatId, array, bot, messageId, text, group_id, table_copy, type)
+        }
+        if (key_work.includes('/start')) {
+            let listfirst = key_work.split(' ')
+            if (listfirst.length != 2) {
+                return bot.sendMessage(chatId, "❌ Cú pháp sai", {
+                    reply_to_message_id: messageId
+                })
+            }
+            let group_id = listfirst[1]
+         
+
+            return startGroup(chatId, array, bot, messageId, text, group_id, table_copy)
+        }
+        if (key_work.includes('/status')) {
+            let listfirst = key_work.split(' ')
+            if (listfirst.length != 2) {
+                return bot.sendMessage(chatId, "❌ Cú pháp sai", {
+                    reply_to_message_id: messageId
+                })
+            }
+            let group_id = listfirst[1]
+         
+
+            return statusGroup(chatId, array, bot, messageId, text, group_id, table_copy)
+        }
+        if (key_work.includes('/stop')) {
+            let listfirst = key_work.split(' ')
+            if (listfirst.length != 2) {
+                return bot.sendMessage(chatId, "❌ Cú pháp sai", {
+                    reply_to_message_id: messageId
+                })
+            }
+            let group_id = listfirst[1]
+          
+
+            return stopGroup(chatId, array, bot, messageId, text, group_id, table_copy)
         }
         if (key_work.includes('/list')) {
 
-            return list(chatId, bot, messageId)
+            return list(chatId, bot, messageId, table_copy)
         }
-     
+
         let arr = key_work.split(' ')
-       
+
         // Active 12345 on
         if (arr[0] == "Active" && arr.length == 3) {
-            if(arr[2]=='on'){
-                await db(table).update('activeacc',1).where("UserId",arr[1])
-                return  bot.sendMessage(chatId, "✅ Đã Active thành công", {
+            if (arr[2] == 'on') {
+                await db(table).update('activeacc', 1).where("UserId", arr[1])
+                return bot.sendMessage(chatId, "✅ Đã Active thành công", {
                     reply_to_message_id: messageId
                 })
             }
-            if(arr[2]=='off'){
-                await db(table).update('activeacc',0).where("UserId",arr[1])
-                return  bot.sendMessage(chatId, "✅ Đã off tài khoản thành công", {
+            if (arr[2] == 'off') {
+                await db(table).update('activeacc', 0).where("UserId", arr[1])
+                return bot.sendMessage(chatId, "✅ Đã off tài khoản thành công", {
                     reply_to_message_id: messageId
                 })
             }
-            
-           
-           
+
+
+
         }
+        if (key_work.includes('/huongdan')) {
+
+            return bot.sendMessage(chatId,`Hướng dẫn dùng bot:
+/list : để lấy danh sách các group tín hiệu bot đang quản lý
+/start group_id : bật trạng thái hoạt động group
+/stop id : chuyển trạng thái tắt
+/trade id : đặt group làm tín hiệu chính để người chơi copy
+/huongdan : danh sách cú pháp bot`)
+        }
+     
     }
 
 

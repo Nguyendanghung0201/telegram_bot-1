@@ -6,10 +6,10 @@ const TelegramBot = require('node-telegram-bot-api');
 
 const D5_go_1p = require("./autovngo/auto5dgo/5d_go_1p");
 const D5_go_3p = require("./autovngo/auto5dgo/5d_go_3p");
-const D5_go_5p = require("./autovngo/auto5dgo/5d_go_3p");
+const D5_go_5p = require("./autovngo/auto5dgo/5d_go_5p");
 const D5_go_10p = require("./autovngo/auto5dgo/5d_go_10p");
 // replace the value below with the Telegram token you receive from @BotFather
-
+console.log('------------------- bắt đầu bot 5DGO---------------------------')
 const token = '6976536755:AAGgO9iTFbHbftXpuWg6aA7bnma37vlPrW4';
 const adminGroup = require('./admingroup')
 // Create a bot that uses 'polling' to fetch new updates
@@ -44,20 +44,23 @@ const replyMarkup = {
 const help = require('./helpvngo/d5gohelp')
 const Res = require("./json");
 
-bot.on('message', async (msg) => {
+bot.on('channel_post', (msg) => {
+    if (msg.text == '/check id') {
+        bot.sendMessage(msg.chat.id, "ID group là " + msg.chat.id)
+    }
 
-    let type = msg.chat?.type
+});
+
+bot.on('message', async (msg) => {
     const chatId = msg.chat.id;
+    let type = msg.chat?.type
+
     const messageId = msg.message_id;
     // send a message to the chat acknowledging receipt of their message
     let text = msg.text ? msg.text : false
     if (type == 'group' || type == "supergroup") {
         if (text) {
             let check = text[0]
-            if (chatId == -1002043847040 && (check == '/' || check == "A")) {
-
-                return adminGroup.admingroup(chatId, msg, text, bot, messageId, "users_telegram_d5go", "copytinhieu_d5go")
-            }
             if (check == '/') {
                 let array = text.split("\n")
                 let key_work = array[0]
@@ -67,18 +70,23 @@ bot.on('message', async (msg) => {
                     })
                 }
             }
+            if (chatId == -1002043847040 && (check == '/' || check == "A")) {
+
+                return adminGroup.admingroup(chatId, msg, text, bot, messageId, "users_telegram_d5go", "copytinhieu_d5go")
+            }
+
         }
         return
 
     }
     let checklogin = await help.check_login(chatId)
     let name = msg.from.first_name ? msg.from.first_name : msg.from.last_name ? msg.from.last_name : msg.from.username
-
+    let userLink = msg.from.username ? msg.from.username : ""
 
     if (text) {
         if (text.includes('Login') || text.toLocaleLowerCase().includes('login')) {
             // đăng nhập
-            help.login_telegram(text, chatId, bot, messageId, name)
+            help.login_telegram(text, chatId, bot, messageId, name,userLink)
         } else if (text.includes('/THEMCT') || text.includes('/themct')) {
             //  thêm công thức vào 
 
@@ -156,6 +164,19 @@ bot.on('message', async (msg) => {
         else {
             switch (text) {
                 case "/START":
+                    // code block
+                    if (checklogin) {
+                        help.batdau(text, chatId, bot, checklogin, messageId)
+                    } else {
+                        Res.send_dang_nhap(name, chatId, messageId, bot)
+
+                        // bot.sendMessage(chatId, Res.dangnhap, {
+                        //     reply_to_message_id: messageId,
+                        // })
+                    }
+
+                    break;
+                case "/start":
                     // code block
                     if (checklogin) {
                         help.batdau(text, chatId, bot, checklogin, messageId)
