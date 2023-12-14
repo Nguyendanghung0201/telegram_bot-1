@@ -93,7 +93,7 @@ async function delay(ms) {
 }
 function removeNonAlphanumeric(inputString) {
     // Define a regular expression to match non-alphanumeric characters
-  const regex = /[^a-zA-Z0-9À-ÖØ-öø-ÿ]/g;
+    const regex = /[^a-zA-Z0-9À-ÖØ-öø-ÿ -@:\n]/g;
   
     // Use the replace method to remove the matched non-alphanumeric characters
     const resultString = inputString.replace(regex, '');
