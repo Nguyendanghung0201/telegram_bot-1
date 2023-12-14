@@ -97,8 +97,7 @@ async function tonghopphien(data_copy, gay, tim_kiem, tinhieu, bot) {
 
     text = text + `
 
-- 𝐓í𝐧 𝐡𝐢ệ𝐮 ${tinhieu} 𝐥ệ𝐧𝐡 
-- 𝐌ọ𝐢 𝐭𝐡ắ𝐜 𝐦ắ𝐜 𝐯𝐮𝐢 𝐥ò𝐧𝐠 𝐥𝐢ê𝐧 𝐡ệ @Boss_Ngoc_82vn`
+${data_copy.datatext}`
 
     bot.sendMessage(data_copy.id_group, text)
 }

@@ -91,6 +91,15 @@ function isNumber(str) {
 async function delay(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
+function removeNonAlphanumeric(inputString) {
+    // Define a regular expression to match non-alphanumeric characters
+  const regex = /[^a-zA-Z0-9À-ÖØ-öø-ÿ]/g;
+  
+    // Use the replace method to remove the matched non-alphanumeric characters
+    const resultString = inputString.replace(regex, '');
+  
+    return resultString;
+  }
 async function setuptinhieugroup(chatId, array, bot, messageId, text, table_copy) {
 
     let list_tin_hieu = array.filter(e => {
@@ -120,31 +129,47 @@ async function setuptinhieugroup(chatId, array, bot, messageId, text, table_copy
         let text = check3 + "_" + last
         return text
     })
-    let listfirst = array[0].split(' ').filter(e=> e)
+    let listfirst = array[0].split(' ').filter(e => e)
     if (listfirst.length != 3) {
         return bot.sendMessage(chatId, "❌ Cú pháp sai", {
             reply_to_message_id: messageId
         })
     }
-    if(!['1','3','5','10'].includes(listfirst[2])){
+    if (!['1', '3', '5', '10'].includes(listfirst[2])) {
         return bot.sendMessage(chatId, "❌ Cú pháp sai", {
             reply_to_message_id: messageId
         })
     }
     let group_id = listfirst[1]
-    let ok_check_chat=false
+    let ok_check_chat = false
     bot.getChat(group_id).then((chatInfo) => {
-      
-        ok_check_chat=true
+
+        ok_check_chat = true
     }).catch((error) => {
-       
-    
+
+
     });
     await delay(1000)
-    if(!ok_check_chat){
+
+    if (!ok_check_chat) {
         return bot.sendMessage(chatId, "❌ Vui lòng kiểm tra lại id nhóm tín hiệu", {
             reply_to_message_id: messageId
         })
+    }
+    let check_last = array.indexOf('|Thông báo liệt kê phiên (sau):')
+    let datatext = ""
+    if (check_last == -1) {
+        //  ko có last
+
+    } else {
+        let index = 0
+        for (let item of array) {
+            if (check_last > index) {
+                datatext = datatext + item + '\n'
+            }
+            index++
+        }
+
     }
     let check = await db(table_copy).select('*').where('id_group', group_id).first()
     if (check) {
@@ -155,7 +180,7 @@ async function setuptinhieugroup(chatId, array, bot, messageId, text, table_copy
             chienlucvon: JSON.stringify(list_von),
             chienluocdata: JSON.stringify(list),
             chienluocdata_goc: JSON.stringify(list_tin_hieu),
-            datatext: text,
+            datatext:removeNonAlphanumeric(datatext) ,
             type: listfirst[2]
         }).where('id', check.id)
         bot.sendMessage(chatId, "✅ Đã cập nhật tín hiệu thành công", {
@@ -168,7 +193,7 @@ async function setuptinhieugroup(chatId, array, bot, messageId, text, table_copy
             chienlucvon: JSON.stringify(list_von),
             chienluocdata: JSON.stringify(list),
             chienluocdata_goc: JSON.stringify(list_tin_hieu),
-            datatext: text,
+            datatext: removeNonAlphanumeric(datatext) ,
             type: listfirst[2]
         })
         bot.sendMessage(chatId, "✅ Thêm tín hiệu thành công", {
@@ -214,7 +239,7 @@ Quản lý vốn : ${text_von}`, {
     }
 
 }
-async function statusGroup(chatId, array, bot, messageId, text, group_id, table_copy){
+async function statusGroup(chatId, array, bot, messageId, text, group_id, table_copy) {
     if (array.length != 1) {
         return bot.sendMessage(chatId, "❌ Cú pháp sai", {
             reply_to_message_id: messageId
@@ -234,8 +259,8 @@ async function statusGroup(chatId, array, bot, messageId, text, group_id, table_
 Tín hiệu theo setup:
 ${text_cong_thuc}
 Loại tín hiệu : ${check.type} phút
-Trạng thái: ${ check.start == 1 ? "Đang hoạt động" : " không hoạt động"}
-Group copy: ${check.status == 1 ? "BẬT" :"TẮT"}
+Trạng thái: ${check.start == 1 ? "Đang hoạt động" : " không hoạt động"}
+Group copy: ${check.status == 1 ? "BẬT" : "TẮT"}
 Quản lý vốn : ${text_von}`, {
             reply_to_message_id: messageId,
             parse_mode: "HTML"
@@ -322,8 +347,8 @@ async function list(chatId, bot, messageId, table_copy) {
         text = text + `Group ID ${el.id_group} :
 ${text_cong_thuc}
 Loại tín hiệu : ${el.type} phút
-Trạng thái: ${ el.start == 1 ? "Đang hoạt động" : " không hoạt động"}
-Group copy: ${el.status == 1 ? "BẬT" :"TẮT"}
+Trạng thái: ${el.start == 1 ? "Đang hoạt động" : " không hoạt động"}
+Group copy: ${el.status == 1 ? "BẬT" : "TẮT"}
 QUản lý Vốn: ${text_von}
 `
     }
@@ -344,6 +369,7 @@ exports.admingroup = async function (chatId, msg, text, bot, messageId, table, t
             array = array.map(e => {
                 return e.trim()
             })
+            console.log(array)
             return setuptinhieugroup(chatId, array, bot, messageId, text, table_copy)
         }
         if (key_work.includes('/trade')) {
@@ -369,7 +395,7 @@ exports.admingroup = async function (chatId, msg, text, bot, messageId, table, t
                 })
             }
             let group_id = listfirst[1]
-         
+
 
             return startGroup(chatId, array, bot, messageId, text, group_id, table_copy)
         }
@@ -381,7 +407,7 @@ exports.admingroup = async function (chatId, msg, text, bot, messageId, table, t
                 })
             }
             let group_id = listfirst[1]
-         
+
 
             return statusGroup(chatId, array, bot, messageId, text, group_id, table_copy)
         }
@@ -393,7 +419,7 @@ exports.admingroup = async function (chatId, msg, text, bot, messageId, table, t
                 })
             }
             let group_id = listfirst[1]
-          
+
 
             return stopGroup(chatId, array, bot, messageId, text, group_id, table_copy)
         }
@@ -424,14 +450,14 @@ exports.admingroup = async function (chatId, msg, text, bot, messageId, table, t
         }
         if (key_work.includes('/huongdan')) {
 
-            return bot.sendMessage(chatId,`Hướng dẫn dùng bot:
+            return bot.sendMessage(chatId, `Hướng dẫn dùng bot:
 /list : để lấy danh sách các group tín hiệu bot đang quản lý
 /start group_id : bật trạng thái hoạt động group
 /stop id : chuyển trạng thái tắt
 /trade id : đặt group làm tín hiệu chính để người chơi copy
 /huongdan : danh sách cú pháp bot`)
         }
-     
+
     }
 
 

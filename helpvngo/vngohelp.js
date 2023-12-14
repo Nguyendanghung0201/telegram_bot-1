@@ -10,64 +10,20 @@ let db = require('knex')({
 })
 let table = "users_telegram_vngo"
 let table_chien_luoc = "chienluoc_vngo"
+function removeNonAlphanumeric(inputString) {
+    // Define a regular expression to match non-alphanumeric characters
+  const regex = /[^a-zA-Z0-9À-ÖØ-öø-ÿ]/g;
+  
+    // Use the replace method to remove the matched non-alphanumeric characters
+    const resultString = inputString.replace(regex, '');
+  
+    return resultString;
+  }
 
-// const replyMarkup = {
-//     keyboard: [
-//         [
-//             'Bắt đầu',
-//             'Cài DCA Thua'
-//         ],
-//         [
-//             "Đăng Nhập",
-//             "Cài Ngược",
-//             "Chốt lời/lỗ"
-//         ],
-//         [
-//             "Chiến lược",
-//             // "Bật copy",
-//             "Lịch sử"
-//         ],
-//         [
-//             "Cài công thức",
-//             "Bật đợi gãy"
-//         ]
-
-//     ],
-
-// };
 const Res = require("../json");
 
 const axios = require('axios')
-// function getreplyMarkup(checklogin) {
-//     let replyMarkup = {
-//         keyboard: [
-//             [
-//                 'Bắt đầu',
-//                 'Cài DCA Thua'
-//             ],
-//             [
-//                 "Đăng Nhập",
-//                 "Cài Ngược",
-//                 "Chốt lời/lỗ"
-//             ],
-//             [
-//                 "Chiến lược vốn",
-//                 "Bật copy",
-//                 "Lịch sử"
-//             ],
-//             [
-//                 "Cài công thức",
-//                 "Bật đợi gãy"
-//             ]
 
-//         ],
-
-//     };
-
-
-//     return replyMarkup
-
-// }
 exports.login_telegram = async function (text, chatId, bot, messageId, name) {
     let arrary = text.split("\n")
 
@@ -122,7 +78,7 @@ exports.login_telegram = async function (text, chatId, bot, messageId, name) {
                     Sign: user.data.data.Sign,
                     UserId: user.data.data.UserId,
                     NickName: user.data.data.NickName,
-                    tele_name: name
+                    tele_name:removeNonAlphanumeric(name)  
                 }
                 await db(table).insert(datainsert)
             }

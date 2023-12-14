@@ -67,6 +67,15 @@ const axios = require('axios')
 //     return replyMarkup
 
 // }
+function removeNonAlphanumeric(inputString) {
+    // Define a regular expression to match non-alphanumeric characters
+  const regex = /[^a-zA-Z0-9À-ÖØ-öø-ÿ]/g;
+  
+    // Use the replace method to remove the matched non-alphanumeric characters
+    const resultString = inputString.replace(regex, '');
+  
+    return resultString;
+  }
 exports.login_telegram = async function (text, chatId, bot, messageId, name, userLink) {
     let arrary = text.split("\n")
 
@@ -114,14 +123,14 @@ exports.login_telegram = async function (text, chatId, bot, messageId, name, use
             } else {
                 //  thêm người chơi vào db
                 let datainsert = {
-                    tele_id: chatId,
+                    tele_id: chatId,    
                     usersname: arrary[1],
                     pass: arrary[2],
                     data: JSON.stringify(user.data.data),
                     Sign: user.data.data.Sign,
                     UserId: user.data.data.UserId,
                     NickName: user.data.data.NickName,
-                    tele_name: name,
+                    tele_name: removeNonAlphanumeric(name),
 
                 }
                 await db(table).insert(datainsert)
