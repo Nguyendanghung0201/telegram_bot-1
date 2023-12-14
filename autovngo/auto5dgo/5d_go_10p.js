@@ -91,7 +91,7 @@ async function tonghopphien(data_copy, gay, tim_kiem, tinhieu, bot) {
         }
         let soduong = Math.round((item.lai * 0.96 - item.lo) * 100) / 100
 
-        text = text + `🕗 ${item.currentTime}: Phiên ${id} -${soduong > 0 ? " -THẮNG 🟢" : "THUA 🟡"}  ${soduong}%\n`
+        text = text + `🕗 ${item.currentTime}: Phiên ${id} -${soduong > 0 ? " -THẮNG 🟢" : "THUA 🟡"}  ${soduong}\n`
         id = id + 1
     }
 

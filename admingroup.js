@@ -204,13 +204,13 @@ async function setuptinhieugroup(chatId, array, bot, messageId, text, table_copy
 
 }
 
-async function trade(chatId, array, bot, messageId, text, group_id, table_copy, type) {
+async function trade(chatId, array, bot, messageId, text, group_id, table_copy) {
     if (array.length != 1) {
         return bot.sendMessage(chatId, "❌ Cú pháp sai", {
             reply_to_message_id: messageId
         })
     }
-    let check = await db(table_copy).select('*').where('id_group', group_id).andWhere('type', type).first()
+    let check = await db(table_copy).select('*').where('id_group', group_id).first()
     if (check) {
         //  loại 1 3 5 10 cho status bang 0 hết
         await db(table_copy).update('status', 0).where('type', type)
@@ -226,7 +226,7 @@ async function trade(chatId, array, bot, messageId, text, group_id, table_copy, 
         bot.sendMessage(chatId, `✅ Đã bật copy theo tín hiệu
 Bot copy theo setup:
 ${text_cong_thuc}
-Loại tín hiệu : ${el.type} phút
+Loại tín hiệu : ${check.type} phút
 Quản lý vốn : ${text_von}`, {
             reply_to_message_id: messageId,
             parse_mode: "HTML"
@@ -376,15 +376,15 @@ exports.admingroup = async function (chatId, msg, text, bot, messageId, table, t
                 return e.trim()
             })
             let listfirst = key_work.split(' ')
-            if (listfirst.length != 3) {
+            if (listfirst.length != 2) {
                 return bot.sendMessage(chatId, "❌ Cú pháp sai", {
                     reply_to_message_id: messageId
                 })
             }
             let group_id = listfirst[1]
-            let type = listfirst[2]
+          
 
-            return trade(chatId, array, bot, messageId, text, group_id, table_copy, type)
+            return trade(chatId, array, bot, messageId, text, group_id, table_copy)
         }
         if (key_work.includes('/start')) {
             let listfirst = key_work.split(' ')
