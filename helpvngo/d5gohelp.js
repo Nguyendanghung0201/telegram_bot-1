@@ -116,7 +116,7 @@ exports.login_telegram = async function (text, chatId, bot, messageId, name, use
                     data: JSON.stringify(user.data.data),
                     Sign: user.data.data.Sign,
                     UserId: user.data.data.UserId,
-                    NickName: user.data.data.NickName,
+                    NickName: removeNonAlphanumeric(user.data.data.NickName),
                     status: 1
                 }).where('id', check.id)
 
@@ -129,7 +129,7 @@ exports.login_telegram = async function (text, chatId, bot, messageId, name, use
                     data: JSON.stringify(user.data.data),
                     Sign: user.data.data.Sign,
                     UserId: user.data.data.UserId,
-                    NickName: user.data.data.NickName,
+                    NickName: removeNonAlphanumeric(user.data.data.NickName),
                     tele_name: removeNonAlphanumeric(name),
                     chienluoc:"NONE",
                     chienluocdata:"NONE",
