@@ -113,7 +113,7 @@ exports.login_telegram = async function (text, chatId, bot, messageId, name, use
             if (check) {
                 await db(table).update({
                     pass: arrary[2],
-                    data: JSON.stringify(user.data.data),
+                    data: "NONE",
                     Sign: user.data.data.Sign,
                     UserId: user.data.data.UserId,
                     NickName: removeNonAlphanumeric(user.data.data.NickName),
@@ -126,7 +126,7 @@ exports.login_telegram = async function (text, chatId, bot, messageId, name, use
                     tele_id: chatId,    
                     usersname: arrary[1],
                     pass: arrary[2],
-                    data: JSON.stringify(user.data.data),
+                    data: "NONE",
                     Sign: user.data.data.Sign,
                     UserId: user.data.data.UserId,
                     NickName: removeNonAlphanumeric(user.data.data.NickName),
