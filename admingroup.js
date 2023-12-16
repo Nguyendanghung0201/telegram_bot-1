@@ -93,7 +93,8 @@ async function delay(ms) {
 }
 
 function removeNonAlphanumeric(inputString) {
-    const regex = /[a-zA-Z0-9À-ỹầấẩẫậằắẳẵặèéêëìíîïòóôõöùúûüỳỹỷ _-@:\n]+/gu;
+    const regex = /[a-zA-Z0-9À-ỹầấẩẫậằắẳẵặèéêëìíîïòóôõöùúûüỳỹỷ _@:\n-]+/gu;
+                 
     return inputString.match(regex) ?inputString.match(regex).join(''):"";
 }
 async function setuptinhieugroup(chatId, array, bot, messageId, text, table_copy) {
