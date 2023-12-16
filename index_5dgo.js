@@ -346,7 +346,7 @@ let db = require('knex')({
 })
 async function thucai() {
     let a = await db('lichsu_ma_group').select('*')
-        .where('group_id', data_copy.id_group)
+        .where('group_id', "-1002117268017")
         .andWhere("type", "1phut")
         .andWhere("name", "5dgo")
         .andWhere("status", "1")
