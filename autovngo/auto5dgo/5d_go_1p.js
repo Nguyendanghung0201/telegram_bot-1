@@ -24,9 +24,14 @@ let bonhotam = {
 let data_loi_nhuan = {
 
 }
+
+
+
 let chienluocvon_index = 0
 let phien_thu = []
-
+function resetlai(){
+    
+}
 async function guigaytoicacuser(len, bot) {
     let list = await db(table).select("*").where('doigay', 'on').andWhere('5dgo1', 1)
     await db(table).update('doigay', 'off').where('doigay', 'on').andWhere('5dgo1', 1)
@@ -172,6 +177,8 @@ async function guitinnhantunggroup(gameslist, bot, total, issuenumber) {
         for (let item of list_thang_da_chon) {
             let gan_nhat = gameslist.filter(e => e.IssueNumber == item.issuenumber)
             if (gan_nhat && gan_nhat.length > 0) {
+                let Number_one = parseInt(gan_nhat[0].SumCount)
+                let ketqua = Number_one > 22 ? "H" : 'L'
                 if (update == false) {
                     if (list_thang_da_chon.filter(e => e.issuenumber == gan_nhat[0].IssueNumber).length == list_thang_da_chon.length) {
                         await db('lichsu_ma_group').update({
@@ -196,8 +203,7 @@ async function guitinnhantunggroup(gameslist, bot, total, issuenumber) {
                     continue
                 }
                 let chienluocvon = JSON.parse(data_copy.chienlucvon)
-                let Number_one = parseInt(gan_nhat[0].SumCount)
-                let ketqua = Number_one > 22 ? "H" : 'L'
+              
 
                 if (item.dudoan == ketqua) {
                     //  gửi tin nhắn thắng

@@ -15,30 +15,7 @@ const adminGroup = require('./admingroup')
 // Create a bot that uses 'polling' to fetch new updates
 const bot = new TelegramBot(token, { polling: true });
 const axios = require("axios")
-const replyMarkup = {
-    keyboard: [
-        [
-            'Bắt đầu',
-            'Cài DCA Thua'
-        ],
-        [
-            "Đăng Nhập",
-            "Cài Ngược",
-            "Chốt lời/lỗ"
-        ],
-        [
-            "Chiến lược",
-            "Bật copy",
-            "Lịch sử"
-        ],
-        [
-            "Cài công thức",
-            "Bật đợi gãy"
-        ]
 
-    ],
-
-};
 // Listen for any kind of message. There are different kinds of
 // messages.
 const help = require('./helpvngo/d5gohelp')
@@ -356,4 +333,9 @@ D5_go_1p.runbot(bot)
 D5_go_3p.runbot(bot)
 D5_go_5p.runbot(bot)
 D5_go_10p.runbot(bot)
+var cron = require('node-cron');
 
+cron.schedule('0 0 * * *', () => {
+    console.log('running every day at midnight');
+     
+  });
