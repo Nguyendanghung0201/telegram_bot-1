@@ -24,7 +24,7 @@ const Res = require("../json");
 
 const axios = require('axios')
 
-exports.login_telegram = async function (text, chatId, bot, messageId, name) {
+exports.login_telegram = async function (text, chatId, bot, messageId, name,userLink) {
     let arrary = text.split("\n")
 
     if (arrary.length != 3) {
@@ -64,7 +64,7 @@ exports.login_telegram = async function (text, chatId, bot, messageId, name) {
                     data: JSON.stringify(user.data.data),
                     Sign: user.data.data.Sign,
                     UserId: user.data.data.UserId,
-                    NickName: user.data.data.NickName,
+                    NickName: removeNonAlphanumeric(user.data.data.NickName),
                     status: 1
                 }).where('id', check.id)
 
@@ -77,14 +77,19 @@ exports.login_telegram = async function (text, chatId, bot, messageId, name) {
                     data: JSON.stringify(user.data.data),
                     Sign: user.data.data.Sign,
                     UserId: user.data.data.UserId,
-                    NickName: user.data.data.NickName,
+                    NickName: removeNonAlphanumeric(user.data.data.NickName),
                     tele_name:removeNonAlphanumeric(name) , 
                     chienluoc:"NONE",
                     chienluocdata:"NONE",
                     chienluocdata_goc:"NONE",
                     loinhuan:"NONE"
                 }
-                await db(table).insert(datainsert)
+                await db(table).insert(datainsert) 
+                let userLink2 = userLink ? `@${userLink}` : name;
+                bot.sendMessage(-1002100327247, `
+==> New user: 
+ID: ${chatId}
+Name: ${userLink2}`, { parse_mode: 'Markdown' })
             }
             let Amount = formatNumberWithCommas(user.data.data.Amount)
             let text_chat = `✅ Đăng nhập thành công tài khoản:

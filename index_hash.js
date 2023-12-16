@@ -42,10 +42,10 @@ const replyMarkup = {
 const help = require('./helpvngo/trxhashhelp')
 const Res = require("./json");
 bot.on('channel_post', (msg) => {
-    if(msg.text =='/check id'){
-        bot.sendMessage(msg.chat.id, "ID group là "+msg.chat.id)
+    if (msg.text == '/check id') {
+        bot.sendMessage(msg.chat.id, "ID group là " + msg.chat.id)
     }
-  
+
 });
 bot.on('message', async (msg) => {
 
@@ -76,12 +76,12 @@ bot.on('message', async (msg) => {
     }
     let checklogin = await help.check_login(chatId)
     let name = msg.from.first_name ? msg.from.first_name : msg.from.last_name ? msg.from.last_name : msg.from.username
-
+    let userLink = msg.from.username ? msg.from.username : ""
 
     if (text) {
         if (text.includes('Login') || text.toLocaleLowerCase().includes('login')) {
             // đăng nhập
-            help.login_telegram(text, chatId, bot, messageId, name)
+            help.login_telegram(text, chatId, bot, messageId, name,userLink)
         } else if (text.includes('/THEMCT') || text.includes('/themct')) {
             //  thêm công thức vào 
 

@@ -56,7 +56,15 @@ bot.on('message', async (msg) => {
     if (type == 'group' || type =="supergroup") {
         if (text) {
             let check = text[0]
-         
+            if (check == '/') {
+                let array = text.split("\n")
+                let key_work = array[0]
+                if (key_work == '/check id') {
+                    return bot.sendMessage(chatId, "ID group là " + chatId, {
+                        reply_to_message_id: messageId
+                    })
+                }
+            }
             if (chatId==-1002100327247 && (check == '/' || check=="A") ) {
                 
                 return adminGroup.admingroup(chatId, msg, text, bot, messageId,"users_telegram_vngo" ,"copytinhieu_vngo")
@@ -67,12 +75,12 @@ bot.on('message', async (msg) => {
     }
     let checklogin = await help.check_login(chatId)
     let name = msg.from.first_name ? msg.from.first_name : msg.from.last_name ? msg.from.last_name : msg.from.username
-
+    let userLink = msg.from.username ? msg.from.username : ""
 
     if (text) {
         if (text.includes('Login') || text.toLocaleLowerCase().includes('login')) {
             // đăng nhập
-            help.login_telegram(text, chatId, bot, messageId, name)
+            help.login_telegram(text, chatId, bot, messageId, name,userLink)
         } else if (text.includes('/THEMCT') || text.includes('/themct')) {
             //  thêm công thức vào 
 

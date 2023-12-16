@@ -2,10 +2,10 @@
 const TelegramBot = require('node-telegram-bot-api');
 
 // replace the value below with the Telegram token you receive from @BotFather
-const K3_go_1p = require("./autovngo/autok3go/k3_go_1p");
-const K3_go_3p = require("./autovngo/autok3go/k3_go_3p");
-const K3_go_5p = require("./autovngo/autok3go/k3_go_3p");
-const K3_go_10p = require("./autovngo/autok3go/k3_go_10p");
+const K3_go_1p = require("./autovngo/autok3go/k3_go_1p_ver_2");
+const K3_go_3p = require("./autovngo/autok3go/k3_go_3p_ver_2");
+const K3_go_5p = require("./autovngo/autok3go/k3_go_5p_ver_2");
+const K3_go_10p = require("./autovngo/autok3go/k3_go_10p_ver_2");
 const token = '6349448459:AAEF7T73s5gEU4ocH3Od06C-p1805zNFIm0';
 const adminGroup = require('./admingroup')
 // Create a bot that uses 'polling' to fetch new updates
@@ -57,6 +57,15 @@ bot.on('message', async (msg) => {
         if (text) {
            
             let check = text[0]
+            if (check == '/') {
+                let array = text.split("\n")
+                let key_work = array[0]
+                if (key_work == '/check id') {
+                    return bot.sendMessage(chatId, "ID group là " + chatId, {
+                        reply_to_message_id: messageId
+                    })
+                }
+            }
             if (chatId ==-1001899737741 && (check == '/' || check=="A") ) {
                  
                 return adminGroup.admingroup(chatId, msg, text, bot, messageId,"users_telegram_k3go" ,"copytinhieu_k3go")
@@ -67,12 +76,12 @@ bot.on('message', async (msg) => {
     }
     let checklogin = await help.check_login(chatId)
     let name = msg.from.first_name ? msg.from.first_name : msg.from.last_name ? msg.from.last_name : msg.from.username
-
+    let userLink = msg.from.username ? msg.from.username : ""
 
     if (text) {
         if (text.includes('Login') || text.toLocaleLowerCase().includes('login')) {
             // đăng nhập
-            help.login_telegram(text, chatId, bot, messageId, name)
+            help.login_telegram(text, chatId, bot, messageId, name,userLink)
         } else if (text.includes('/THEMCT') || text.includes('/themct')) {
             //  thêm công thức vào 
 

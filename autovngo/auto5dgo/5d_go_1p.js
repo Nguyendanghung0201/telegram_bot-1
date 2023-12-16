@@ -8,6 +8,8 @@ let db = require('knex')({
         database: 'bot_telegram'
     }
 })
+const { attachPaginate } = require('knex-paginate');
+attachPaginate();
 const axios = require('axios')
 axios.defaults.timeout = 4000;
 var randomstring = require("randomstring");
@@ -75,23 +77,23 @@ async function tonghopphien(data_copy, gay, tim_kiem, tinhieu, bot) {
             type: '5dgo1',
             "currentTime": currentTime
         })
-        let list_send = await db("lichsu_tong_hop").select('*')
-            .where('group_id', data_copy.id_group).andWhere("type", '5dgo1')
-            .orderBy('id', 'desc').limit(50)
+        let result = await db("lichsu_tong_hop").select('*')
+        .where('group_id', data_copy.id_group).andWhere("type", '5dgo1')
+        .orderBy('id', 'desc')
+        .paginate({ perPage: 50, currentPage: 1 });
+        let list_send  = result.data
+        let total =result.pagination.total
+
         let text = `❇️ 𝐓𝐡ố𝐧𝐠 𝐤ê ${list_send.length} 𝐩𝐡𝐢ê𝐧 𝐠ầ𝐧 𝐧𝐡ấ𝐭  ....
     
     `;
-        let id = ""
-        let batdau = false
+    let sophien_ban_dau= total -list_send.length+1
         for (let item of list_send.reverse()) {
-            if (batdau === false) {
-                id = item.id
-                batdau = true
-            }
+           
             let soduong = Math.round((item.lai * 0.96 - item.lo) * 100) / 100
 
-            text = text + `🕗 ${item.currentTime}: Phiên ${id} -${soduong > 0 ? " -THẮNG 🟢" : "THUA 🟡"}  ${soduong}\n`
-            id = id + 1
+            text = text + `🕗 ${item.currentTime}: Phiên ${sophien_ban_dau} -${soduong > 0 ? " -THẮNG 🟢" : "THUA 🟡"}  ${soduong}\n`
+            sophien_ban_dau = sophien_ban_dau + 1
         }
 
         text = text + `
