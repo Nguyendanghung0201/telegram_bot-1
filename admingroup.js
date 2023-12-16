@@ -311,6 +311,7 @@ async function stopGroup(chatId, array, bot, messageId, text, group_id, table_co
     if (check) {
         await db(table_copy).update('start', 0).where('id', check.id)
         await db("lichsu_ma_group").del().where("group_id", group_id)
+        await db("lichsu_tong_hop").del().where("group_id", group_id)
         let text_cong_thuc = ""
         let data = JSON.parse(check.chienluocdata_goc)
         for (let element of data) {
