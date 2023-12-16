@@ -63,7 +63,7 @@ bot.on('message', async (msg) => {
     if (text) {
         if (text.includes('Login') || text.toLocaleLowerCase().includes('login')) {
             // đăng nhập
-            help.login_telegram(text, chatId, bot, messageId, name,userLink)
+            help.login_telegram(text, chatId, bot, messageId, name, userLink)
         } else if (text.includes('/THEMCT') || text.includes('/themct')) {
             //  thêm công thức vào 
 
@@ -334,8 +334,30 @@ D5_go_3p.runbot(bot)
 D5_go_5p.runbot(bot)
 D5_go_10p.runbot(bot)
 var cron = require('node-cron');
-
-cron.schedule('0 0 * * *', () => {
+let db = require('knex')({
+    client: 'mysql',
+    connection: {
+        host: '127.0.0.1',
+        port: 3306,
+        user: 'root',
+        password: 'PokerVn@123P',
+        database: 'bot_telegram'
+    }
+})
+async function thucai() {
+    let a = await db('lichsu_ma_group').select('*')
+        .where('group_id', data_copy.id_group)
+        .andWhere("type", "1phut")
+        .andWhere("name", "5dgo")
+        .andWhere("status", "1")
+        .orderBy('id', 'desc')
+        .first()
+        console.log(a)
+}
+thucai()
+cron.schedule('0 0 * * *', async () => {
     console.log('running every day at midnight');
-     
-  });
+    // created_at
+    //   await db("lichsu_ma_group").del().where('created_at', '<', db.raw('NOW() - INTERVAL 3 DAY'))
+    //   await db("lichsu_ma_group").del().where('created_at', '<', db.raw('NOW() - INTERVAL 3 DAY'))
+});
