@@ -197,7 +197,7 @@ async function guitinnhantunggroup(gameslist, bot, total, issuenumber) {
                     //  gửi tin nhắn thắng
                     bot.sendMessage(item.group_id, "🔊 🟢 THẮNG")
 
-                    await tonghopphien(data_copy, true, tim_kiem, chienluocvon.length, bot)
+                    await tonghopphien(data_copy, true, item, chienluocvon.length, bot)
                     await delay(500)
                 } else {
                     //  gửi tin nhắn thua
@@ -208,7 +208,7 @@ async function guitinnhantunggroup(gameslist, bot, total, issuenumber) {
                     bot.sendMessage(item.group_id, "🔊 🟡 THUA")
                     if (item.chienluocvon_index >= (chienluocvon.length - 1)) {
                         await delay(500)
-                        await tonghopphien(data_copy, true, tim_kiem, chienluocvon.length, bot)
+                        await tonghopphien(data_copy, true, item, chienluocvon.length, bot)
                         //  gãy rồi
                         if (data_copy.status == 1) {
                             guigaytoicacuser(chienluocvon.length, bot)
