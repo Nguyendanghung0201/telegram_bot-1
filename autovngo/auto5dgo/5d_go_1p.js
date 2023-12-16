@@ -1,15 +1,4 @@
-let db = require('knex')({
-    client: 'mysql',
-    connection: {
-        host: '127.0.0.1',
-        port: 3306,
-        user: 'root',
-        password: 'PokerVn@123P',
-        database: 'bot_telegram'
-    }
-})
-const { attachPaginate } = require('knex-paginate');
-attachPaginate();
+const db = require('../db/db');
 const axios = require('axios')
 axios.defaults.timeout = 4000;
 var randomstring = require("randomstring");
