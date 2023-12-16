@@ -152,156 +152,197 @@ async function test(bot) {
 
 
 async function guitinnhantunggroup(gameslist, bot, total, issuenumber) {
-    let gan_nhat = gameslist[0]
-    let IssueNumber_old = gan_nhat.IssueNumber
-    let list_thang_da_chon = await db("lichsu_ma_group").select('*').where('status', 0)
-        .andWhere("type", "5phut")
-        .andWhere("name", "5dgo")
-        .andWhere("xoso", "NONE")
-        .andWhere('issuenumber', IssueNumber_old)
-    let Number_one = parseInt(gan_nhat.SumCount)
-    let ketqua = Number_one > 22 ? "H" : 'L'
-
-    for (let item of list_thang_da_chon) {
-        if (item.dudoan == ketqua) {
-            //  gửi tin nhắn thắng
-            bot.sendMessage(item.group_id, "🔊 🟢 THẮNG")
-
-        } else {
-            //  gửi tin nhắn thua
-            bot.sendMessage(item.group_id, "🔊 🟡 THUA")
-        }
-    }
-    await db('lichsu_ma_group').update({
-        "xoso": ketqua,
-        status: 1
-    }).where("type", "5phut")
-        .andWhere("name", "5dgo")
-        .andWhere('issuenumber', IssueNumber_old)
+    try {
+        let list_thang_da_chon = await db("lichsu_ma_group")
+            .select('*').where('status', 0)
+            .andWhere("type", "5phut")
+            .andWhere("name", "5dgo")
+            .andWhere("xoso", "NONE")
+        // .andWhere('issuenumber', IssueNumber_old)
 
 
-    await delay(2000)
-    let check_curent = await db("lichsu_ma_group").select('*')
-    .where("issuenumber", issuenumber)
-    .andWhere("type", "5phut")
-    .andWhere("name", "5dgo")
-    .first()
-if (check_curent) {
-    return
-}
-    let list = await db("copytinhieu_d5go").select("*").where('start', 1).andWhere("type", "5")
-    for (let data_copy of list) {
-
-        let dudoan = ""
-        let dk_trung = ""
-
-        if (data_copy && data_copy.chienluocdata) {
-            let check_dk = JSON.parse(data_copy.chienluocdata)
-
-            for (let element of check_dk) {
-                // 3L_N  2L2N_N
-                let check = element.slice(0, element.length - 2);
-
-                let check2 = total.slice(0, check.length);
-
-                if (check === check2) {
-                    //  đúng dk
-                    // vào lệnh
-                    let last = element.slice(element.length - 1, element.length)
-                    if (last == "N") {
-                        dudoan = 'L'
+        let update = false
+        for (let item of list_thang_da_chon) {
+            let gan_nhat = gameslist.filter(e => e.IssueNumber == item.issuenumber)
+            if (gan_nhat && gan_nhat.length > 0) {
+                if (update == false) {
+                    if (list_thang_da_chon.filter(e => e.issuenumber == gan_nhat[0].IssueNumber).length == list_thang_da_chon.length) {
+                        await db('lichsu_ma_group').update({
+                            "xoso": ketqua,
+                            status: 1
+                        }).where("type", "5phut")
+                            .andWhere("name", "5dgo")
+                            .andWhere('issuenumber', gan_nhat[0].IssueNumber)
+                        update = true
                     } else {
-                        dudoan = "H"
+                        await db('lichsu_ma_group').update({
+                            "xoso": ketqua,
+                            status: 1
+                        }).where("type", "5phut")
+                            .andWhere("name", "5dgo")
+                            .andWhere('issuenumber', gan_nhat[0].IssueNumber)
                     }
-                    dk_trung = check
-                    // "issuenumber": issuenumber,
-                    // "dudoan": dudoan,
-                    // "ketqua": "NONE",
-                    // "dieukien": data_copy.chienluocdata,
-                    // "dk_trung": dk_trung,
-                    // "xoso": false,// false , "small";"big"
-                    // "betcount": value_bet_coppy //   betcount: Mat
-                    let tim_kiem = await db('lichsu_ma_group').select('*')
-                    .where('group_id',data_copy.id_group)
-                    .andWhere("type", "5phut")
-                    .andWhere("name", "5dgo")
-                    .andWhere("status", "1")
-                    .orderBy('id', 'desc') 
-                    .first() 
-                    let chienluocvon_index = 0
-                    let session_moi
-                    let chienluocvon = JSON.parse(data_copy.chienlucvon)
-                    if (tim_kiem) {
-                        if (tim_kiem.dudoan == tim_kiem.ketqua) {
-                            //  ket quả đúng r
-                            //   reset sesion
-                            session_moi = randomstring.generate({
-                                length: 12,
-                                charset: 'alphabetic'
-                            });
-                            chienluocvon_index = 0
+                    await delay(500)
+                }
+                let data_copy = await db("copytinhieu_d5go").select("*").where('start', 1).andWhere("type", "5").andWhere("id_group", item.group_id).first()
+                if (!data_copy) {
+                    continue
+                }
+                let chienluocvon = JSON.parse(data_copy.chienlucvon)
+                let Number_one = parseInt(gan_nhat[0].SumCount)
+                let ketqua = Number_one > 22 ? "H" : 'L'
 
-                            await tonghopphien(data_copy, true, tim_kiem, chienluocvon.length, bot)
-                            await delay(1000)
+                if (item.dudoan == ketqua) {
+                    //  gửi tin nhắn thắng
+                    bot.sendMessage(item.group_id, "🔊 🟢 THẮNG")
 
+                    await tonghopphien(data_copy, true, tim_kiem, chienluocvon.length, bot)
+                    await delay(500)
+                } else {
+                    //  gửi tin nhắn thua
+                    // (chienluocvon.length - 1)
+                    // if (data_copy.status == 1) {
+                    //     guigaytoicacuser(chienluocvon.length, bot)
+                    // }
+                    bot.sendMessage(item.group_id, "🔊 🟡 THUA")
+                    if (item.chienluocvon_index >= (chienluocvon.length - 1)) {
+                        await delay(500)
+                        await tonghopphien(data_copy, true, tim_kiem, chienluocvon.length, bot)
+                        //  gãy rồi
+                        if (data_copy.status == 1) {
+                            guigaytoicacuser(chienluocvon.length, bot)
+                        }
+                    }
+                }
+            }
+        }
+        await delay(2000)
+        let check_curent = await db("lichsu_ma_group").select('*')
+            .where("issuenumber", issuenumber)
+            .andWhere("type", "5phut")
+            .andWhere("name", "5dgo")
+            .first()
+        if (check_curent) {
+            return
+        }
+
+        let list = await db("copytinhieu_d5go").select("*").where('start', 1).andWhere("type", "5")
+        for (let data_copy of list) {
+            let dudoan = ""
+            let dk_trung = ""
+
+            if (data_copy && data_copy.chienluocdata) {
+                let check_dk = JSON.parse(data_copy.chienluocdata)
+
+                for (let element of check_dk) {
+                    // 3L_N  2L2N_N
+                    let check = element.slice(0, element.length - 2);
+
+                    let check2 = total.slice(0, check.length);
+
+                    if (check === check2) {
+                        //  đúng dk
+                        // vào lệnh
+                        let last = element.slice(element.length - 1, element.length)
+                        if (last == "N") {
+                            dudoan = 'L'
                         } else {
-                            //  cộng thêm
-                            let old_index = tim_kiem.chienluocvon_index
-                            if (old_index >= (chienluocvon.length - 1)) {
-                                //  gãy rồi
+                            dudoan = "H"
+                        }
+                        dk_trung = check
+                        // "issuenumber": issuenumber,
+                        // "dudoan": dudoan,
+                        // "ketqua": "NONE",
+                        // "dieukien": data_copy.chienluocdata,
+                        // "dk_trung": dk_trung,
+                        // "xoso": false,// false , "small";"big"
+                        // "betcount": value_bet_coppy //   betcount: Mat
+                        let tim_kiem = await db('lichsu_ma_group').select('*')
+                            .where('group_id', data_copy.id_group)
+                            .andWhere("type", "5phut")
+                            .andWhere("name", "5dgo")
+                            .andWhere("status", "1")
+                            .orderBy('id', 'desc')
+                            .first()
+                        let chienluocvon_index = 0
+                        let session_moi
+                        let chienluocvon = JSON.parse(data_copy.chienlucvon)
+
+                        if (tim_kiem && tim_kiem.dudoan) {
+                            if (tim_kiem.dudoan == tim_kiem.ketqua) {
+                                //  ket quả đúng r
+                                //   reset sesion
                                 session_moi = randomstring.generate({
                                     length: 12,
                                     charset: 'alphabetic'
                                 });
                                 chienluocvon_index = 0
-                                if(data_copy.status ==1){
-                                    guigaytoicacuser(chienluocvon.length,bot)
-                                }
-                                await tonghopphien(data_copy, false, tim_kiem, chienluocvon.length, bot)
-                                await delay(1000)
+
+
+
                             } else {
-                                session_moi = tim_kiem.session
-                                chienluocvon_index = old_index + 1
+                                //  cộng thêm
+                                let old_index = tim_kiem.chienluocvon_index
+                                if (old_index >= (chienluocvon.length - 1)) {
+                                    //  gãy rồi
+                                    session_moi = randomstring.generate({
+                                        length: 12,
+                                        charset: 'alphabetic'
+                                    });
+                                    chienluocvon_index = 0
+
+
+                                } else {
+                                    session_moi = tim_kiem.session
+                                    chienluocvon_index = old_index + 1
+                                }
                             }
+
+
+                        } else {
+
+                            session_moi = randomstring.generate({
+                                length: 12,
+                                charset: 'alphabetic'
+                            });
                         }
 
-
-                    } else {
-                        session_moi = randomstring.generate({
-                            length: 12,
-                            charset: 'alphabetic'
-                        });
-                    }
-
-                    let dai = dudoan == 'H' ? "LỚN" : "NHỎ"
-                    bot.sendMessage(data_copy.id_group, `🧏‍♀  ${dai} ${Math.round(parseInt(chienluocvon[chienluocvon_index]))}!
+                        let dai = dudoan == 'H' ? "LỚN" : "NHỎ"
+                        bot.sendMessage(data_copy.id_group, `🧏‍♀  ${dai} ${Math.round(parseInt(chienluocvon[chienluocvon_index]))}!
 Kỳ xổ (${issuenumber})`)
-                    await db("lichsu_ma_group").insert({
-                        "issuenumber": issuenumber,
-                        type: "5phut",
-                        "dudoan": dudoan,
-                        group_id: data_copy.id_group,
-                        "ketqua": "NONE",
-                        "dk_trung": check,
-                        "xoso": "NONE",
-                        "chienluocvon_index": chienluocvon_index,
-                        "betcount": Math.round(parseInt(chienluocvon[chienluocvon_index])),
-                        name: "5dgo",
-                        session: session_moi,
-                        status: 0
+                        await db("lichsu_ma_group").insert({
+                            "issuenumber": issuenumber,
+                            type: "5phut",
+                            "dudoan": dudoan,
+                            group_id: data_copy.id_group,
+                            "ketqua": "NONE",
+                            "dk_trung": check,
+                            "xoso": "NONE",
+                            "chienluocvon_index": chienluocvon_index,
+                            "betcount": Math.round(parseInt(chienluocvon[chienluocvon_index])),
+                            name: "5dgo",
+                            session: session_moi,
+                            status: 0
 
-                    })
-                    break
+                        })
+                        break
+                    }
+                    //   9359237.64 :9359237.64 9349237.64
                 }
-                //   9359237.64 :9359237.64 9349237.64
+                await delay(1000)
+
+
             }
-            await delay(1000)
-
-
         }
+
+    } catch (e) {
+        console.log("gui tn group ", e)
+
     }
 
+
 }
+
 
 async function check_dk(issuenumber, bot) {
 
