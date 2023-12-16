@@ -344,20 +344,14 @@ let db = require('knex')({
         database: 'bot_telegram'
     }
 })
-async function thucai() {
-    let a = await db('lichsu_ma_group').select('*')
-        .where('group_id', "-1002117268017")
-        .andWhere("type", "1phut")
-        .andWhere("name", "5dgo")
-        .andWhere("status", "1")
-        .orderBy('id', 'desc')
-        .first()
-        console.log(a)
+async function thutest(){
+    await db("lichsu_ma_group").del().where('created_at', '<', db.raw('NOW() - INTERVAL 3 DAY'))
+    await db("lichsu_tong_hop").del().where('created_at', '<', db.raw('NOW() - INTERVAL 3 DAY'))
 }
-thucai()
+thutest()
 cron.schedule('0 0 * * *', async () => {
     console.log('running every day at midnight');
     // created_at
-    //   await db("lichsu_ma_group").del().where('created_at', '<', db.raw('NOW() - INTERVAL 3 DAY'))
-    //   await db("lichsu_ma_group").del().where('created_at', '<', db.raw('NOW() - INTERVAL 3 DAY'))
+      await db("lichsu_ma_group").del().where('created_at', '<', db.raw('NOW() - INTERVAL 3 DAY'))
+      await db("lichsu_tong_hop").del().where('created_at', '<', db.raw('NOW() - INTERVAL 3 DAY'))
 });

@@ -42,21 +42,14 @@ Len: ${len}`)
         await delay(300)
     }
 }
+const moment = require('moment-timezone');
 function getCurrentTime() {
     const now = new Date();
 
     // Lấy giờ và phút
-    let hours = now.getHours();
-    let minutes = now.getMinutes();
+    const currentTimeHanoi = moment().tz('Asia/Ho_Chi_Minh').format('HH:mm');
 
-    // Định dạng giờ và phút thành chuỗi
-    hours = hours < 10 ? '0' + hours : hours;
-    minutes = minutes < 10 ? '0' + minutes : minutes;
-
-    // Kết hợp giờ và phút thành định dạng "HH:mm"
-    const formattedTime = `${hours}:${minutes}`;
-
-    return formattedTime;
+    return currentTimeHanoi;
 }
 async function tonghopphien(data_copy, gay, tim_kiem, tinhieu, bot) {
     try {
@@ -282,7 +275,7 @@ async function guitinnhantunggroup(gameslist, bot, total, issuenumber) {
                         let chienluocvon = JSON.parse(data_copy.chienlucvon)
 
                         if (tim_kiem && tim_kiem.dudoan) {
-                            if (tim_kiem.dudoan == tim_kiem.ketqua) {
+                            if (tim_kiem.dudoan == tim_kiem.xoso) {
                                 //  ket quả đúng r
                                 //   reset sesion
                                 session_moi = randomstring.generate({
@@ -290,8 +283,6 @@ async function guitinnhantunggroup(gameslist, bot, total, issuenumber) {
                                     charset: 'alphabetic'
                                 });
                                 chienluocvon_index = 0
-
-
 
                             } else {
                                 //  cộng thêm
@@ -303,14 +294,11 @@ async function guitinnhantunggroup(gameslist, bot, total, issuenumber) {
                                         charset: 'alphabetic'
                                     });
                                     chienluocvon_index = 0
-
-
                                 } else {
                                     session_moi = tim_kiem.session
                                     chienluocvon_index = old_index + 1
                                 }
                             }
-
 
                         } else {
 
