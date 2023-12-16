@@ -4,7 +4,7 @@ let db = require('knex')({
         host: '127.0.0.1',
         port: 3306,
         user: 'root',
-        password: 'PokerVn@123P',
+        password: 'PokerVn@123P' ,
         database: 'bot_telegram'
     }
 })
@@ -169,6 +169,7 @@ async function guitinnhantunggroup(gameslist, bot, total, issuenumber) {
             //  gửi tin nhắn thắng
             bot.sendMessage(item.group_id, "🔊 🟢 THẮNG")
 
+
         } else {
             //  gửi tin nhắn thua
             bot.sendMessage(item.group_id, "🔊 🟡 THUA")
@@ -194,7 +195,6 @@ async function guitinnhantunggroup(gameslist, bot, total, issuenumber) {
 
     let list = await db("copytinhieu_d5go").select("*").where('start', 1).andWhere("type", "1")
     for (let data_copy of list) {
-
         let dudoan = ""
         let dk_trung = ""
 
@@ -224,6 +224,7 @@ async function guitinnhantunggroup(gameslist, bot, total, issuenumber) {
                     // "dk_trung": dk_trung,
                     // "xoso": false,// false , "small";"big"
                     // "betcount": value_bet_coppy //   betcount: Mat
+                    
                     let tim_kiem = list_thang_da_chon.filter(e => e.group_id == data_copy.id_group)
                     let chienluocvon_index = 0
                     let session_moi
@@ -267,6 +268,8 @@ async function guitinnhantunggroup(gameslist, bot, total, issuenumber) {
 
                     } else {
                         console.log('khong tin thay ')
+                        console.log(data_copy.id_group)
+                         console.log(list_thang_da_chon.map(e=> e.group_id))
                         session_moi = randomstring.generate({
                             length: 12,
                             charset: 'alphabetic'
@@ -446,9 +449,19 @@ async function vaolenhtaikhoan(item, element, issuenumber, bot) {
         }
 
         if (last == "N") {
-            data.selecttype = "L"
+            if(item.cainguoc =='on'){
+                data.selecttype = "H"
+            }else{
+                data.selecttype = "L"
+            }
+          
         } else {
-            data.selecttype = "H"
+            if(item.cainguoc =='on'){
+                data.selecttype = "L"
+            }else{
+                data.selecttype = "H"
+            }
+         
         }
 
         let result = await axios.post("https://bdguubdg.com/api/webapi/SetGame5DBetting", data, {

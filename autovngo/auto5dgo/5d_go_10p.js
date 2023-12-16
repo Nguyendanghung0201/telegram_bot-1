@@ -4,7 +4,7 @@ let db = require('knex')({
         host: '127.0.0.1',
         port: 3306,
         user: 'root',
-        password: 'PokerVn@123P',
+        password: 'PokerVn@123P' ,
         database: 'bot_telegram'
     }
 })
@@ -440,9 +440,19 @@ async function vaolenhtaikhoan(item, element, issuenumber, bot) {
         }
 
         if (last == "N") {
-            data.selecttype = "L"
+            if(item.cainguoc =='on'){
+                data.selecttype = "H"
+            }else{
+                data.selecttype = "L"
+            }
+          
         } else {
-            data.selecttype = "H"
+            if(item.cainguoc =='on'){
+                data.selecttype = "L"
+            }else{
+                data.selecttype = "H"
+            }
+         
         }
 
         let result = await axios.post("https://bdguubdg.com/api/webapi/SetGame5DBetting", data, {
