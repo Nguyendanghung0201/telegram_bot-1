@@ -221,12 +221,18 @@ if (check_curent) {
                     // "dk_trung": dk_trung,
                     // "xoso": false,// false , "small";"big"
                     // "betcount": value_bet_coppy //   betcount: Mat
-                    let tim_kiem = list_thang_da_chon.filter(e => e.group_id == data_copy.id_group)
+                    let tim_kiem = await db('lichsu_ma_group').select('*')
+                    .where('group_id',data_copy.id_group)
+                    .andWhere("type", "10phut")
+                    .andWhere("name", "5dgo")
+                    .andWhere("status", "1")
+                    .orderBy('id', 'desc') 
+                    .first() 
                     let chienluocvon_index = 0
                     let session_moi
                     let chienluocvon = JSON.parse(data_copy.chienlucvon)
-                    if (tim_kiem && tim_kiem.length > 0) {
-                        if (tim_kiem[0].dudoan == ketqua) {
+                    if (tim_kiem ) {
+                        if (tim_kiem.dudoan == tim_kiem.ketqua) {
                             //  ket quả đúng r
                             //   reset sesion
                             session_moi = randomstring.generate({
@@ -235,12 +241,12 @@ if (check_curent) {
                             });
                             chienluocvon_index = 0
 
-                            await tonghopphien(data_copy, true, tim_kiem[0], chienluocvon.length, bot)
+                            await tonghopphien(data_copy, true, tim_kiem, chienluocvon.length, bot)
                             await delay(1000)
 
                         } else {
                             //  cộng thêm
-                            let old_index = tim_kiem[0].chienluocvon_index
+                            let old_index = tim_kiem.chienluocvon_index
                             if (old_index >= (chienluocvon.length - 1)) {
                                 //  gãy rồi
                                 session_moi = randomstring.generate({
@@ -251,10 +257,10 @@ if (check_curent) {
                                 if(data_copy.status ==1){
                                     guigaytoicacuser(chienluocvon.length,bot)
                                 }
-                                await tonghopphien(data_copy, false, tim_kiem[0], chienluocvon.length, bot)
+                                await tonghopphien(data_copy, false, tim_kiem, chienluocvon.length, bot)
                                 await delay(1000)
                             } else {
-                                session_moi = tim_kiem[0].session
+                                session_moi = tim_kiem.session
                                 chienluocvon_index = old_index + 1
                             }
                         }

@@ -4,7 +4,7 @@ let db = require('knex')({
         host: '127.0.0.1',
         port: 3306,
         user: 'root',
-        password: 'PokerVn@123P' ,
+        password: 'PokerVn@123P',
         database: 'bot_telegram'
     }
 })
@@ -154,35 +154,50 @@ async function test(bot) {
 
 
 async function guitinnhantunggroup(gameslist, bot, total, issuenumber) {
-    let gan_nhat = gameslist[0]
-    let IssueNumber_old = gan_nhat.IssueNumber
+
+
     let list_thang_da_chon = await db("lichsu_ma_group").select('*').where('status', 0)
         .andWhere("type", "1phut")
         .andWhere("name", "5dgo")
         .andWhere("xoso", "NONE")
-        .andWhere('issuenumber', IssueNumber_old)
-    let Number_one = parseInt(gan_nhat.SumCount)
-    let ketqua = Number_one > 22 ? "H" : 'L'
+    // .andWhere('issuenumber', IssueNumber_old)
 
+
+    let update = false
     for (let item of list_thang_da_chon) {
-        if (item.dudoan == ketqua) {
-            //  gửi tin nhắn thắng
-            bot.sendMessage(item.group_id, "🔊 🟢 THẮNG")
+        let gan_nhat = gameslist.filter(e => e.IssueNumber == item.issuenumber)
+        if (gan_nhat && gan_nhat.length > 0) {
+            let Number_one = parseInt(gan_nhat[0].SumCount)
+            let ketqua = Number_one > 22 ? "H" : 'L'
+            if (item.dudoan == ketqua) {
+                //  gửi tin nhắn thắng
+                bot.sendMessage(item.group_id, "🔊 🟢 THẮNG")
+            } else {
+                //  gửi tin nhắn thua
+                bot.sendMessage(item.group_id, "🔊 🟡 THUA")
+            }
 
-
-        } else {
-            //  gửi tin nhắn thua
-            bot.sendMessage(item.group_id, "🔊 🟡 THUA")
+            if (update == false) {
+                if (list_thang_da_chon.filter(e => e.issuenumber == gan_nhat[0].IssueNumber).length == list_thang_da_chon.length) {
+                    await db('lichsu_ma_group').update({
+                        "xoso": ketqua,
+                        status: 1
+                    }).where("type", "1phut")
+                        .andWhere("name", "5dgo")
+                        .andWhere('issuenumber', gan_nhat[0].IssueNumber)
+                    update = true
+                } else {
+                    await db('lichsu_ma_group').update({
+                        "xoso": ketqua,
+                        status: 1
+                    }).where("type", "1phut")
+                        .andWhere("name", "5dgo")
+                        .andWhere('issuenumber', gan_nhat[0].IssueNumber)
+                }
+            }
         }
+
     }
-    await db('lichsu_ma_group').update({
-        "xoso": ketqua,
-        status: 1
-    }).where("type", "1phut")
-        .andWhere("name", "5dgo")
-        .andWhere('issuenumber', IssueNumber_old)
-
-
     await delay(2000)
     let check_curent = await db("lichsu_ma_group").select('*')
         .where("issuenumber", issuenumber)
@@ -224,14 +239,22 @@ async function guitinnhantunggroup(gameslist, bot, total, issuenumber) {
                     // "dk_trung": dk_trung,
                     // "xoso": false,// false , "small";"big"
                     // "betcount": value_bet_coppy //   betcount: Mat
+                    let tim_kiem = await db('lichsu_ma_group').select('*')
+                    .where('group_id',data_copy.id_group)
+                    .andWhere("type", "1phut")
+                    .andWhere("name", "5dgo")
+                    .andWhere("status", "1")
+                    .orderBy('id', 'desc') 
+                    .first() 
+
                     
-                    let tim_kiem = list_thang_da_chon.filter(e => e.group_id == data_copy.id_group)
+                   
                     let chienluocvon_index = 0
                     let session_moi
                     let chienluocvon = JSON.parse(data_copy.chienlucvon)
 
-                    if (tim_kiem && tim_kiem.length > 0) {
-                        if (tim_kiem[0].dudoan == ketqua) {
+                    if (tim_kiem &&tim_kiem.dudoan) {
+                        if (tim_kiem.dudoan == tim_kiem.ketqua) {
                             //  ket quả đúng r
                             //   reset sesion
                             session_moi = randomstring.generate({
@@ -239,13 +262,13 @@ async function guitinnhantunggroup(gameslist, bot, total, issuenumber) {
                                 charset: 'alphabetic'
                             });
                             chienluocvon_index = 0
-                            console.log('tong hop phien ', data_copy.id_group)
-                            await tonghopphien(data_copy, true, tim_kiem[0], chienluocvon.length, bot)
+                           
+                            await tonghopphien(data_copy, true, tim_kiem, chienluocvon.length, bot)
                             await delay(1000)
 
                         } else {
                             //  cộng thêm
-                            let old_index = tim_kiem[0].chienluocvon_index
+                            let old_index = tim_kiem.chienluocvon_index
                             if (old_index >= (chienluocvon.length - 1)) {
                                 //  gãy rồi
                                 session_moi = randomstring.generate({
@@ -256,20 +279,18 @@ async function guitinnhantunggroup(gameslist, bot, total, issuenumber) {
                                 if (data_copy.status == 1) {
                                     guigaytoicacuser(chienluocvon.length, bot)
                                 }
-                                console.log('tong hop phien gay ', data_copy.id_group)
-                                await tonghopphien(data_copy, false, tim_kiem[0], chienluocvon.length, bot)
+                              
+                                await tonghopphien(data_copy, false, tim_kiem, chienluocvon.length, bot)
                                 await delay(1000)
                             } else {
-                                session_moi = tim_kiem[0].session
+                                session_moi = tim_kiem.session
                                 chienluocvon_index = old_index + 1
                             }
                         }
 
 
                     } else {
-                        console.log('khong tin thay ')
-                        console.log(data_copy.id_group)
-                         console.log(list_thang_da_chon.map(e=> e.group_id))
+                      
                         session_moi = randomstring.generate({
                             length: 12,
                             charset: 'alphabetic'
@@ -325,6 +346,7 @@ async function check_dk(issuenumber, bot) {
 
 
             let total = await xacdinhlichsu(gameslist, bot)
+            guitinnhantunggroup(gameslist, bot, total, issuenumber)
             let trybonhotam = await db('bonhotam').select('*').where('issuenumber', issuenumber).andWhere('type', '5dgo1').andWhere("status", 1).first()
             if (trybonhotam) {
                 return
@@ -361,7 +383,7 @@ async function check_dk(issuenumber, bot) {
             }
 
 
-            guitinnhantunggroup(gameslist, bot, total, issuenumber)
+
             await delay(1000)
             for (let item of list) {
 
@@ -449,19 +471,19 @@ async function vaolenhtaikhoan(item, element, issuenumber, bot) {
         }
 
         if (last == "N") {
-            if(item.cainguoc =='on'){
+            if (item.cainguoc == 'on') {
                 data.selecttype = "H"
-            }else{
+            } else {
                 data.selecttype = "L"
             }
-          
+
         } else {
-            if(item.cainguoc =='on'){
+            if (item.cainguoc == 'on') {
                 data.selecttype = "L"
-            }else{
+            } else {
                 data.selecttype = "H"
             }
-         
+
         }
 
         let result = await axios.post("https://bdguubdg.com/api/webapi/SetGame5DBetting", data, {
