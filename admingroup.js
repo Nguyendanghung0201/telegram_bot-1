@@ -5,7 +5,7 @@ let db = require('knex')({
         host: '127.0.0.1',
         port: 3306,
         user: 'root',
-        password: 'PokerVn@123P' ,
+        password: 'PokerVn@123P',
         database: 'bot_telegram'
     }
 })
@@ -92,10 +92,10 @@ async function delay(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-  function removeNonAlphanumeric(inputString) {
+function removeNonAlphanumeric(inputString) {
     const regex = /[a-zA-Z0-9À-ỹầấẩẫậằắẳẵặèéêëìíîïòóôõöùúûüỳỹỷ -@:\n]+/gu;
     return inputString.match(regex).join('');
-  }
+}
 async function setuptinhieugroup(chatId, array, bot, messageId, text, table_copy) {
 
     let list_tin_hieu = array.filter(e => {
@@ -169,16 +169,16 @@ async function setuptinhieugroup(chatId, array, bot, messageId, text, table_copy
 
     }
     let check = await db(table_copy).select('*').where('id_group', group_id).first()
-    console.log('s ',removeNonAlphanumeric(datatext))
-    if (check) {
 
+    if (check) {
+      
         await db(table_copy).update({
             id_group: group_id,
             chatid: chatId,
             chienlucvon: JSON.stringify(list_von),
             chienluocdata: JSON.stringify(list),
             chienluocdata_goc: JSON.stringify(list_tin_hieu),
-            datatext:removeNonAlphanumeric(datatext) ,
+            datatext: removeNonAlphanumeric(datatext),
             type: listfirst[2]
         }).where('id', check.id)
         bot.sendMessage(chatId, "✅ Đã cập nhật tín hiệu thành công", {
@@ -191,7 +191,7 @@ async function setuptinhieugroup(chatId, array, bot, messageId, text, table_copy
             chienlucvon: JSON.stringify(list_von),
             chienluocdata: JSON.stringify(list),
             chienluocdata_goc: JSON.stringify(list_tin_hieu),
-            datatext: removeNonAlphanumeric(datatext) ,
+            datatext: removeNonAlphanumeric(datatext),
             type: listfirst[2]
         })
         bot.sendMessage(chatId, "✅ Thêm tín hiệu thành công", {
@@ -310,6 +310,7 @@ async function stopGroup(chatId, array, bot, messageId, text, group_id, table_co
     let check = await db(table_copy).select('*').where('id_group', group_id).first()
     if (check) {
         await db(table_copy).update('start', 0).where('id', check.id)
+        await db("lichsu_ma_group").del().where("group_id", group_id)
         let text_cong_thuc = ""
         let data = JSON.parse(check.chienluocdata_goc)
         for (let element of data) {
@@ -356,106 +357,110 @@ QUản lý Vốn: ${text_von}
     })
 }
 exports.admingroup = async function (chatId, msg, text, bot, messageId, table, table_copy) {
+    try {
+        let array = text.split("\n")
 
-    let array = text.split("\n")
+        if (array.length > 0) {
 
-    if (array.length > 0) {
+            let key_work = array[0]
 
-        let key_work = array[0]
-
-        if (key_work.includes('/setup_bot')) {
-            array = array.map(e => {
-                return e.trim()
-            })
-            console.log(array)
-            return setuptinhieugroup(chatId, array, bot, messageId, text, table_copy)
-        }
-        if (key_work.includes('/trade')) {
-            array = array.map(e => {
-                return e.trim()
-            })
-            let listfirst = key_work.split(' ')
-            if (listfirst.length != 2) {
-                return bot.sendMessage(chatId, "❌ Cú pháp sai", {
-                    reply_to_message_id: messageId
+            if (key_work.includes('/setup_bot')) {
+                array = array.map(e => {
+                    return e.trim()
                 })
+
+                return setuptinhieugroup(chatId, array, bot, messageId, text, table_copy)
             }
-            let group_id = listfirst[1]
-          
-
-            return trade(chatId, array, bot, messageId, text, group_id, table_copy)
-        }
-        if (key_work.includes('/start')) {
-            let listfirst = key_work.split(' ')
-            if (listfirst.length != 2) {
-                return bot.sendMessage(chatId, "❌ Cú pháp sai", {
-                    reply_to_message_id: messageId
+            if (key_work.includes('/trade')) {
+                array = array.map(e => {
+                    return e.trim()
                 })
+                let listfirst = key_work.split(' ')
+                if (listfirst.length != 2) {
+                    return bot.sendMessage(chatId, "❌ Cú pháp sai", {
+                        reply_to_message_id: messageId
+                    })
+                }
+                let group_id = listfirst[1]
+
+
+                return trade(chatId, array, bot, messageId, text, group_id, table_copy)
             }
-            let group_id = listfirst[1]
+            if (key_work.includes('/start')) {
+                let listfirst = key_work.split(' ')
+                if (listfirst.length != 2) {
+                    return bot.sendMessage(chatId, "❌ Cú pháp sai", {
+                        reply_to_message_id: messageId
+                    })
+                }
+                let group_id = listfirst[1]
 
 
-            return startGroup(chatId, array, bot, messageId, text, group_id, table_copy)
-        }
-        if (key_work.includes('/status')) {
-            let listfirst = key_work.split(' ')
-            if (listfirst.length != 2) {
-                return bot.sendMessage(chatId, "❌ Cú pháp sai", {
-                    reply_to_message_id: messageId
-                })
+                return startGroup(chatId, array, bot, messageId, text, group_id, table_copy)
             }
-            let group_id = listfirst[1]
+            if (key_work.includes('/status')) {
+                let listfirst = key_work.split(' ')
+                if (listfirst.length != 2) {
+                    return bot.sendMessage(chatId, "❌ Cú pháp sai", {
+                        reply_to_message_id: messageId
+                    })
+                }
+                let group_id = listfirst[1]
 
 
-            return statusGroup(chatId, array, bot, messageId, text, group_id, table_copy)
-        }
-        if (key_work.includes('/stop')) {
-            let listfirst = key_work.split(' ')
-            if (listfirst.length != 2) {
-                return bot.sendMessage(chatId, "❌ Cú pháp sai", {
-                    reply_to_message_id: messageId
-                })
+                return statusGroup(chatId, array, bot, messageId, text, group_id, table_copy)
             }
-            let group_id = listfirst[1]
+            if (key_work.includes('/stop')) {
+                let listfirst = key_work.split(' ')
+                if (listfirst.length != 2) {
+                    return bot.sendMessage(chatId, "❌ Cú pháp sai", {
+                        reply_to_message_id: messageId
+                    })
+                }
+                let group_id = listfirst[1]
 
 
-            return stopGroup(chatId, array, bot, messageId, text, group_id, table_copy)
-        }
-        if (key_work.includes('/list')) {
-
-            return list(chatId, bot, messageId, table_copy)
-        }
-
-        let arr = key_work.split(' ')
-
-        // Active 12345 on
-        if (arr[0] == "Active" && arr.length == 3) {
-            if (arr[2] == 'on') {
-                await db(table).update('activeacc', 1).where("UserId", arr[1])
-                return bot.sendMessage(chatId, "✅ Đã Active thành công", {
-                    reply_to_message_id: messageId
-                })
+                return stopGroup(chatId, array, bot, messageId, text, group_id, table_copy)
             }
-            if (arr[2] == 'off') {
-                await db(table).update('activeacc', 0).where("UserId", arr[1])
-                return bot.sendMessage(chatId, "✅ Đã off tài khoản thành công", {
-                    reply_to_message_id: messageId
-                })
+            if (key_work.includes('/list')) {
+
+                return list(chatId, bot, messageId, table_copy)
             }
 
+            let arr = key_work.split(' ')
+
+            // Active 12345 on
+            if (arr[0] == "Active" && arr.length == 3) {
+                if (arr[2] == 'on') {
+                    await db(table).update('activeacc', 1).where("UserId", arr[1])
+                    return bot.sendMessage(chatId, "✅ Đã Active thành công", {
+                        reply_to_message_id: messageId
+                    })
+                }
+                if (arr[2] == 'off') {
+                    await db(table).update('activeacc', 0).where("UserId", arr[1])
+                    return bot.sendMessage(chatId, "✅ Đã off tài khoản thành công", {
+                        reply_to_message_id: messageId
+                    })
+                }
 
 
-        }
-        if (key_work.includes('/huongdan')) {
 
-            return bot.sendMessage(chatId, `Hướng dẫn dùng bot:
+            }
+            if (key_work.includes('/huongdan')) {
+
+                return bot.sendMessage(chatId, `Hướng dẫn dùng bot:
 /list : để lấy danh sách các group tín hiệu bot đang quản lý
 /start group_id : bật trạng thái hoạt động group
 /stop id : chuyển trạng thái tắt
 /trade id : đặt group làm tín hiệu chính để người chơi copy
 /huongdan : danh sách cú pháp bot`)
+            }
+
         }
 
+    } catch (e) {
+        console.log("admingroup ")
     }
 
 

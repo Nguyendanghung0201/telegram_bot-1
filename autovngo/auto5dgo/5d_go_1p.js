@@ -54,54 +54,59 @@ function getCurrentTime() {
     return formattedTime;
 }
 async function tonghopphien(data_copy, gay, tim_kiem, tinhieu, bot) {
-    let list = await db("lichsu_ma_group").select('*').where("session", tim_kiem.session)
-    let lo = 0
-    let lai = 0
-    for (let item of list) {
-
-        if (item.dudoan == item.xoso) {
-            lai = lai + item.betcount
-        } else {
-            lo = lo + item.betcount
+    try{
+        let list = await db("lichsu_ma_group").select('*').where("session", tim_kiem.session)
+        let lo = 0
+        let lai = 0
+        for (let item of list) {
+    
+            if (item.dudoan == item.xoso) {
+                lai = lai + item.betcount
+            } else {
+                lo = lo + item.betcount
+            }
         }
-    }
-    let currentTime = getCurrentTime();
-
-    await db("lichsu_tong_hop").insert({
-        group_id: data_copy.id_group,
-        sophien: list.length,
-        lo: lo,
-        lai: lai,
-        session: tim_kiem.session,
-        type: '5dgo1',
-        "currentTime": currentTime
-    })
-    let list_send = await db("lichsu_tong_hop").select('*')
-        .where('group_id', data_copy.id_group).andWhere("type", '5dgo1')
-        .orderBy('id', 'desc').limit(50)
-    let text = `❇️ 𝐓𝐡ố𝐧𝐠 𝐤ê ${list_send.length} 𝐩𝐡𝐢ê𝐧 𝐠ầ𝐧 𝐧𝐡ấ𝐭  ....
-
-`;
-    let id = ""
-    let batdau = false
-    for (let item of list_send.reverse()) {
-        if (batdau === false) {
-            id = item.id
-            batdau = true
+        let currentTime = getCurrentTime();
+    
+        await db("lichsu_tong_hop").insert({
+            group_id: data_copy.id_group,
+            sophien: list.length,
+            lo: lo,
+            lai: lai,
+            session: tim_kiem.session,
+            type: '5dgo1',
+            "currentTime": currentTime
+        })
+        let list_send = await db("lichsu_tong_hop").select('*')
+            .where('group_id', data_copy.id_group).andWhere("type", '5dgo1')
+            .orderBy('id', 'desc').limit(50)
+        let text = `❇️ 𝐓𝐡ố𝐧𝐠 𝐤ê ${list_send.length} 𝐩𝐡𝐢ê𝐧 𝐠ầ𝐧 𝐧𝐡ấ𝐭  ....
+    
+    `;
+        let id = ""
+        let batdau = false
+        for (let item of list_send.reverse()) {
+            if (batdau === false) {
+                id = item.id
+                batdau = true
+            }
+            let soduong = Math.round((item.lai * 0.96 - item.lo) * 100) / 100
+    
+            text = text + `🕗 ${item.currentTime}: Phiên ${id} -${soduong > 0 ? " -THẮNG 🟢" : "THUA 🟡"}  ${soduong}\n`
+            id = id + 1
         }
-        let soduong = Math.round((item.lai * 0.96 - item.lo) * 100) / 100
-
-        text = text + `🕗 ${item.currentTime}: Phiên ${id} -${soduong > 0 ? " -THẮNG 🟢" : "THUA 🟡"}  ${soduong}\n`
-        id = id + 1
+    
+        text = text + `
+    
+    ${data_copy.datatext}`
+    
+        bot.sendMessage(data_copy.id_group, text, {
+            parse_mode: "HTML"
+        })
+    }catch(e){
+        console.log('tonghopphien err : ',e)
     }
-
-    text = text + `
-
-${data_copy.datatext}`
-
-    bot.sendMessage(data_copy.id_group, text, {
-        parse_mode: "HTML"
-    })
+   
 }
 
 async function test(bot) {
@@ -141,7 +146,7 @@ async function test(bot) {
 
         }
     } catch (e) {
-        console.log('loi ', e)
+        console.log('loi test : ', e)
         timeout = 5000
 
     }
@@ -154,8 +159,7 @@ async function test(bot) {
 
 
 async function guitinnhantunggroup(gameslist, bot, total, issuenumber) {
-
-
+try{
     let list_thang_da_chon = await db("lichsu_ma_group").select('*').where('status', 0)
         .andWhere("type", "1phut")
         .andWhere("name", "5dgo")
@@ -245,10 +249,7 @@ async function guitinnhantunggroup(gameslist, bot, total, issuenumber) {
                     .andWhere("name", "5dgo")
                     .andWhere("status", "1")
                     .orderBy('id', 'desc') 
-                    .first() 
-
-                    
-                   
+                    .first()      
                     let chienluocvon_index = 0
                     let session_moi
                     let chienluocvon = JSON.parse(data_copy.chienlucvon)
@@ -324,6 +325,12 @@ Kỳ xổ (${issuenumber})`)
 
         }
     }
+
+}catch(e){
+    console.log("gui tn group ",e)
+
+}
+
 
 }
 
