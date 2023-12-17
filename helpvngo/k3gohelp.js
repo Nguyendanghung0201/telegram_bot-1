@@ -176,7 +176,7 @@ ${text_chat_item}`
     }
 }
 exports.batdau = async function (text, chatId, bot, checklogin, messageId) {
-    let amount = await axios.post("https://bdguubdg.com/api/webapi/GetUserAmount", {
+    let amount = await axios.post("https://bdguubdg.com/api/webapi/GetUserInfo", {
         uid: checklogin.UserId,
         sign: checklogin.Sign,
         language: "vi"
