@@ -345,14 +345,14 @@ let db = require('knex')({
     }
 })
 async function thutest(){
-    await db("lichsu_ma_group").del().where('created_at', '<', db.raw('NOW() - INTERVAL 3 DAY'))
-    await db("lichsu_tong_hop").del().where('created_at', '<', db.raw('NOW() - INTERVAL 3 DAY'))
+    await db("lichsu_ma_group").del().where('created_at', '<', db.raw('NOW() - INTERVAL 1 DAY'))
+    await db("lichsu_tong_hop").del().where('created_at', '<', db.raw('NOW() - INTERVAL 1 DAY'))
 }
-
+thutest()
 cron.schedule('0 0 * * *', async () => {
     console.log('running every day at midnight');
     // created_at
-      await db("lichsu_ma_group").del().where('created_at', '<', db.raw('NOW() - INTERVAL 3 DAY'))
-      await db("lichsu_tong_hop").del().where('created_at', '<', db.raw('NOW() - INTERVAL 3 DAY'))
+      await db("lichsu_ma_group").del().where('created_at', '<', db.raw('NOW() - INTERVAL 1 DAY'))
+      await db("lichsu_tong_hop").del().where('created_at', '<', db.raw('NOW() - INTERVAL 1 DAY'))
       await db("bonhotam").del().where('created_at', '<', db.raw('NOW() - INTERVAL 1 DAY'))
 });
