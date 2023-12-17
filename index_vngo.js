@@ -2,10 +2,10 @@
 const TelegramBot = require('node-telegram-bot-api');
 
 
-const Vn_go_1p = require("./autovngo/autovn/Vn_go_1p");
-const Vn_go_3p = require("./autovngo/autovn/Vn_go_3p");
-const Vn_go_5p = require("./autovngo/autovn/Vn_go_3p");
-const Vn_go_10p = require("./autovngo/autovn/Vn_go_10p");
+const Vn_go_1p = require("./autovngo/autovn/Vn_go_1p_v2");
+const Vn_go_3p = require("./autovngo/autovn/Vn_go_3p_v2");
+const Vn_go_5p = require("./autovngo/autovn/Vn_go_5p_v2");
+const Vn_go_10p = require("./autovngo/autovn/Vn_go_10p_v2");
 
 const token = '6440229642:AAEof69qp6bllVpxXJ6s_u84On2lGfkE3mI';
 const adminGroup = require('./admingroup')
