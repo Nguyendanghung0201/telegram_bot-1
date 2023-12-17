@@ -24,10 +24,10 @@ function resetlai(){
     
 }
 async function guigaytoicacuser(len, bot) {
-    let list = await db(table).select("*").where('doigay', 'on').andWhere('trxhash3', 1)
-    await db(table).update('doigay', 'off').where('doigay', 'on').andWhere('trxhash3', 1)
+    let list = await db(table).select("*").where('doigay', 'on').andWhere('trxhash1', 1)
+    await db(table).update('doigay', 'off').where('doigay', 'on').andWhere('trxhash1', 1)
     for (let el of list) {
-        bot.sendMessage(el.chatId, `🔂 Tín hiệu đã gãy TRX Hash 3 phút, bắt đầu copy tín hiệu
+        bot.sendMessage(el.chatId, `🔂 Tín hiệu đã gãy TRX Hash 1 phút, bắt đầu copy tín hiệu
 Entry: 0
 Len: ${len}`)
         await delay(300)
@@ -63,11 +63,11 @@ async function tonghopphien(data_copy, gay, tim_kiem, tinhieu, bot) {
             lo: lo,
             lai: lai,
             session: tim_kiem.session,
-            type: 'trxhash3',
+            type: 'trxhash1',
             "currentTime": currentTime
         })
         let result = await db("lichsu_tong_hop").select('*')
-        .where('group_id', data_copy.id_group).andWhere("type", 'trxhash3')
+        .where('group_id', data_copy.id_group).andWhere("type", 'trxhash1')
         .orderBy('id', 'desc')
         .paginate({ perPage: 50, currentPage: 1 });
         let list_send  = result.data
@@ -103,7 +103,7 @@ async function test(bot) {
 
     try {
         let data = await axios.post("https://bdguubdg.com/api/webapi/GetTRXGameIssue", {
-            typeid: 14,
+            typeid: 13,
             language: "vi"
         }, {
             headers: { 'content-type': 'application/x-www-form-urlencoded' },
@@ -162,7 +162,7 @@ async function guitinnhantunggroup(gameslist, bot, total, issuenumber) {
     try {
         let list_thang_da_chon = await db("lichsu_ma_group")
             .select('*').where('status', 0)
-            .andWhere("type", "3phut")
+            .andWhere("type", "1phut")
             .andWhere("name", "trxhash")
             .andWhere("xoso", "NONE")
         // .andWhere('issuenumber', IssueNumber_old)
@@ -179,7 +179,7 @@ async function guitinnhantunggroup(gameslist, bot, total, issuenumber) {
                         await db('lichsu_ma_group').update({
                             "xoso": ketqua,
                             status: 1
-                        }).where("type", "3phut")
+                        }).where("type", "1phut")
                             .andWhere("name", "trxhash")
                             .andWhere('issuenumber', gan_nhat[0].IssueNumber)
                         update = true
@@ -187,13 +187,13 @@ async function guitinnhantunggroup(gameslist, bot, total, issuenumber) {
                         await db('lichsu_ma_group').update({
                             "xoso": ketqua,
                             status: 1
-                        }).where("type", "3phut")
+                        }).where("type", "1phut")
                             .andWhere("name", "trxhash")
                             .andWhere('issuenumber', gan_nhat[0].IssueNumber)
                     }
                     await delay(500)
                 }
-                let data_copy = await db("copytinhieu_trxhash").select("*").where('start', 1).andWhere("type", "3").andWhere("id_group", item.group_id).first()
+                let data_copy = await db("copytinhieu_trxhash").select("*").where('start', 1).andWhere("type", "1").andWhere("id_group", item.group_id).first()
                 if (!data_copy) {
                     continue
                 }
@@ -227,14 +227,14 @@ async function guitinnhantunggroup(gameslist, bot, total, issuenumber) {
         await delay(2000)
         let check_curent = await db("lichsu_ma_group").select('*')
             .where("issuenumber", issuenumber)
-            .andWhere("type", "3phut")
+            .andWhere("type", "1phut")
             .andWhere("name", "trxhash")
             .first()
         if (check_curent) {
             return
         }
 
-        let list = await db("copytinhieu_trxhash").select("*").where('start', 1).andWhere("type", "3")
+        let list = await db("copytinhieu_trxhash").select("*").where('start', 1).andWhere("type", "1")
         for (let data_copy of list) {
             let dudoan = ""
             let dk_trung = ""
@@ -267,7 +267,7 @@ async function guitinnhantunggroup(gameslist, bot, total, issuenumber) {
                         // "betcount": value_bet_coppy //   betcount: Mat
                         let tim_kiem = await db('lichsu_ma_group').select('*')
                             .where('group_id', data_copy.id_group)
-                            .andWhere("type", "3phut")
+                            .andWhere("type", "1phut")
                             .andWhere("name", "trxhash")
                             .andWhere("status", "1")
                             .orderBy('id', 'desc')
@@ -315,7 +315,7 @@ async function guitinnhantunggroup(gameslist, bot, total, issuenumber) {
 Kỳ xổ (${issuenumber})`)
                         await db("lichsu_ma_group").insert({
                             "issuenumber": issuenumber,
-                            type: "3phut",
+                            type: "1phut",
                             "dudoan": dudoan,
                             group_id: data_copy.id_group,
                             "ketqua": "NONE",
@@ -351,7 +351,7 @@ async function check_dk(issuenumber, bot) {
     try {
         let list = []
       let list_lich_su = await axios.post("https://bdguubdg.com/api/webapi/GetTRXNoaverageEmerdList", {
-        typeid: 14,
+        typeid: 13,
         pageno: 1,
         language: "vi"
     }, {
@@ -367,7 +367,7 @@ async function check_dk(issuenumber, bot) {
 
             let total = await xacdinhlichsu(gameslist, bot)
             guitinnhantunggroup(gameslist, bot, total, issuenumber)
-            let trybonhotam = await db('bonhotam').select('*').where('issuenumber', issuenumber).andWhere('type', 'trxhash3').andWhere("status", 1).first()
+            let trybonhotam = await db('bonhotam').select('*').where('issuenumber', issuenumber).andWhere('type', 'trxhash1').andWhere("status", 1).first()
             if (trybonhotam) {
                 return
             }
@@ -375,7 +375,7 @@ async function check_dk(issuenumber, bot) {
             list = await db(table).select("*")
                 .where("status", 1)
                 .andWhere('chienluoc_id', '<>', 0)
-                .andWhere("trxhash3", 1)
+                .andWhere("trxhash1", 1)
                 .andWhere("chienluocdata", "<>", "NONE")
                 .andWhere("chienluoc", "<>", "NONE")
                 .andWhere("activeacc", 1)
@@ -385,12 +385,12 @@ async function check_dk(issuenumber, bot) {
                 .where("status", 1)
                 .andWhere('coppy', "on")
                 .andWhere("doigay", "off")
-                .andWhere("trxhash3", 1)
+                .andWhere("trxhash1", 1)
                 .andWhere("chienluoc", "<>", "NONE")
                 .andWhere("chienluocdata", "NONE")
                 .andWhere("activeacc", 1)
 
-            let data_copy = await db('copytinhieu_trxhash').select('*').where('status', 1).andWhere("type", "3").first()
+            let data_copy = await db('copytinhieu_trxhash').select('*').where('status', 1).andWhere("type", "1").first()
             if (data_copy) {
                 let list_copy = list2.map(e => {
                     e.chienluoc_id = 100
@@ -445,7 +445,7 @@ async function check_dk(issuenumber, bot) {
     if (bonhotam[issuenumber] && bonhotam[issuenumber].length > 0) {
         await db("bonhotam").insert({
             issuenumber: issuenumber,
-            type: 'trxhash3',
+            type: 'trxhash1',
             data: JSON.stringify(bonhotam[issuenumber]),
             status: 1
         })
@@ -482,7 +482,7 @@ async function vaolenhtaikhoan(item, element, issuenumber, bot) {
             uid: item.UserId,
             sign: item.Sign,
             gametype: 2,
-            typeid: 14,
+            typeid: 13,
             language: "vi",
             amount: "1000",
             betcount: Math.round(parseInt(chienluoc_von[data_bet[item.usersname]]) / 1000),
@@ -532,18 +532,18 @@ async function vaolenhtaikhoan(item, element, issuenumber, bot) {
                     bonhotam[issuenumber] = [data]
                 }
 
-                bot.sendMessage(item.tele_id, `✅ Đã đặt cược TRX Hash 3 ${data.selecttype == "big" ? "Lớn" : "Nhỏ"} - ${data.betcount}000đ - Kỳ xổ ${issuenumber}`,)
+                bot.sendMessage(item.tele_id, `✅ Đã đặt cược TRX Hash 1 ${data.selecttype == "big" ? "Lớn" : "Nhỏ"} - ${data.betcount}000đ - Kỳ xổ ${issuenumber}`,)
             } else {
                 //  đặt cược lỗi
                 let msg = result.data.msg
                 if (msg == "Số tiền không đủ") {
-                    await db(table).update('trxhash3', 0).where('id', item.id)
+                    await db(table).update('trxhash1', 0).where('id', item.id)
                     bot.sendMessage(chatId, `❌ Dừng copy vì lý do: Số tiền không đủ
 Kỳ này: ${issuenumber}`)
 
                 }
                 if (msg == "sign error") {
-                    await db(table).update('trxhash3', 0).where('id', item.id)
+                    await db(table).update('trxhash1', 0).where('id', item.id)
                     bot.sendMessage(chatId, `❌ Dừng copy vì lý do: Tài khoản đã đăng xuất
 Kỳ này: ${issuenumber}`)
 
@@ -587,7 +587,7 @@ async function ketqua_run_bot(ketqua, item, bot, Number_one) {
                 data_bet[element.usersname] = 0
             }
 
-            bot.sendMessage(element.chatId, `🟢 Chúc mừng bạn đã thắng ${Math.round(parseInt(element.betcount) * 0.96 * 1000)}đ TRX Hash 3 kì ${element.issuenumber}
+            bot.sendMessage(element.chatId, `🟢 Chúc mừng bạn đã thắng ${Math.round(parseInt(element.betcount) * 0.96 * 1000)}đ TRX Hash 1 kì ${element.issuenumber}
 Tổng lợi nhuận: ${data_loi_nhuan[element.usersname]}đ`)
             // await db('lichsu_ma').insert({
             //     "uid": element.uid,
@@ -606,7 +606,7 @@ Tổng lợi nhuận: ${data_loi_nhuan[element.usersname]}đ`)
 
                 if (data_loi_nhuan[element.usersname] > element.loidung) {
                     bot.sendMessage(element.chatId, `🟢 Chúc mừng bạn đã đạt tới mức lợi nhuận kỳ vọng để dừng bot`)
-                    await db(table).update('trxhash3', 0).where('id', element.id)
+                    await db(table).update('trxhash1', 0).where('id', element.id)
                     delete data_loi_nhuan[element.usersname]
                     delete data_bet[element.usersname]
 
@@ -631,7 +631,7 @@ Tổng lợi nhuận: ${data_loi_nhuan[element.usersname]}đ`)
             } else {
                 data_bet[element.usersname] = 0
             }
-            bot.sendMessage(element.chatId, `🔴 Rất tiếc bạn đã thua ${element.betcount}000đ TRX Hash 3 kì ${element.issuenumber}`)
+            bot.sendMessage(element.chatId, `🔴 Rất tiếc bạn đã thua ${element.betcount}000đ TRX Hash 1 kì ${element.issuenumber}`)
             // await db('lichsu_ma').insert({
             //     "uid": element.uid,
             //     "usersid": element.id,
@@ -649,7 +649,7 @@ Tổng lợi nhuận: ${data_loi_nhuan[element.usersname]}đ`)
                 //  -10000 100000
                 if (data_loi_nhuan[element.usersname] < 0 && Math.abs(data_loi_nhuan[element.usersname]) > element.lodung) {
                     bot.sendMessage(element.chatId, `🔴 Rất tiếc bạn đã thua đến điểm dừng lỗ để dừng bot`)
-                    await db(table).update('trxhash3', 0).where('id', element.id)
+                    await db(table).update('trxhash1', 0).where('id', element.id)
                     delete data_loi_nhuan[element.usersname]
                     delete data_bet[element.usersname]
                 }
@@ -658,14 +658,14 @@ Tổng lợi nhuận: ${data_loi_nhuan[element.usersname]}đ`)
         }
     }
     delete bonhotam[item.IssueNumber]
-    await db("bonhotam").update('status', 0).where('issuenumber', item.IssueNumber).andWhere('type', 'trxhash3').andWhere("status", 1)
+    await db("bonhotam").update('status', 0).where('issuenumber', item.IssueNumber).andWhere('type', 'trxhash1').andWhere("status", 1)
 }
 async function xacdinhlichsu(gameslist, bot) {
     let total = "";
     for (let item of gameslist) {
         let Number_one =  parseInt(item.Number)
         if (!bonhotam[item.IssueNumber]) {
-            let trybonhotam = await db('bonhotam').select('*').where('issuenumber', item.IssueNumber).andWhere('type', 'trxhash3').andWhere("status", 1).first()
+            let trybonhotam = await db('bonhotam').select('*').where('issuenumber', item.IssueNumber).andWhere('type', 'trxhash1').andWhere("status", 1).first()
             if (trybonhotam) {
                 bonhotam[trybonhotam.issuenumber] = JSON.parse(trybonhotam.data)
             }

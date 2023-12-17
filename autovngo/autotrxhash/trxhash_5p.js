@@ -1,20 +1,14 @@
-let db = require('knex')({
-    client: 'mysql',
-    connection: {
-        host: '127.0.0.1',
-        port: 3306,
-        user: 'root',
-        password: 'PokerVn@123P' ,
-        database: 'bot_telegram'
-    }
-})
+const db = require('../db/db');
 const axios = require('axios')
+axios.defaults.timeout = 4000;
+var randomstring = require("randomstring");
 const json = require('../../json')
-let first_time = false;
 let table = "users_telegram_trxhash"
+let first_time = false;
 let data_bet = {
 
 }
+
 let bonhotam = {
 
 }
@@ -22,10 +16,14 @@ let data_loi_nhuan = {
 
 }
 
+
+
 let chienluocvon_index = 0
 let phien_thu = []
-
-async function guigaytoicacuser(bot, len) {
+function resetlai(){
+    
+}
+async function guigaytoicacuser(len, bot) {
     let list = await db(table).select("*").where('doigay', 'on').andWhere('trxhash5', 1)
     await db(table).update('doigay', 'off').where('doigay', 'on').andWhere('trxhash5', 1)
     for (let el of list) {
@@ -35,27 +33,74 @@ Len: ${len}`)
         await delay(300)
     }
 }
-async function tonghopphien(data, tinhieu, gay) {
-    let lo = 0
-    let lai = 0
-    for (let el of data) {
-        if (el.ketqua) {
-            lai = lai + el.betcount
-        } else {
-            lo = lo + el.betcount
+const moment = require('moment-timezone');
+function getCurrentTime() {
+    const now = new Date();
+
+    // Lấy giờ và phút
+    const currentTimeHanoi = moment().tz('Asia/Ho_Chi_Minh').format('HH:mm');
+
+    return currentTimeHanoi;
+}
+async function tonghopphien(data_copy, gay, tim_kiem, tinhieu, bot) {
+    try {
+        let list = await db("lichsu_ma_group").select('*').where("session", tim_kiem.session)
+        let lo = 0
+        let lai = 0
+        for (let item of list) {
+
+            if (item.dudoan == item.xoso) {
+                lai = lai + item.betcount
+            } else {
+                lo = lo + item.betcount
+            }
         }
+        let currentTime = getCurrentTime();
+
+        await db("lichsu_tong_hop").insert({
+            group_id: data_copy.id_group,
+            sophien: list.length,
+            lo: lo,
+            lai: lai,
+            session: tim_kiem.session,
+            type: 'trxhash5',
+            "currentTime": currentTime
+        })
+        let result = await db("lichsu_tong_hop").select('*')
+        .where('group_id', data_copy.id_group).andWhere("type", 'trxhash5')
+        .orderBy('id', 'desc')
+        .paginate({ perPage: 50, currentPage: 1 });
+        let list_send  = result.data
+        let total =result.pagination.total
+
+        let text = `❇️ 𝐓𝐡ố𝐧𝐠 𝐤ê ${list_send.length} 𝐩𝐡𝐢ê𝐧 𝐠ầ𝐧 𝐧𝐡ấ𝐭  ....
+    
+`;
+    let sophien_ban_dau= total -list_send.length+1
+        for (let item of list_send.reverse()) {
+           
+            let soduong = Math.round((item.lai * 0.96 - item.lo) * 100) / 100
+
+            text = text + `🕗 ${item.currentTime}: Phiên ${sophien_ban_dau} -${soduong > 0 ? " -THẮNG 🟢" : "THUA 🟡"}  ${soduong}\n`
+            sophien_ban_dau = sophien_ban_dau + 1
+        }
+
+        text = text + `
+    
+    ${data_copy.datatext}`
+
+        bot.sendMessage(data_copy.id_group, text, {
+            parse_mode: "HTML"
+        })
+    } catch (e) {
+        console.log('tonghopphien err : ', e)
     }
-    await db('tonghopphien').insert({
-        data: JSON.stringify(data),
-        lai: lai.toString(),
-        lo: lo.toString(),
-        tinhieu: tinhieu,
-        gay: gay,
-        type: 'trxhash5'
-    })
 
 }
+
 async function test(bot) {
+    let timeout = 1000
+
     try {
         let data = await axios.post("https://bdguubdg.com/api/webapi/GetTRXGameIssue", {
             typeid: 15,
@@ -63,95 +108,249 @@ async function test(bot) {
         }, {
             headers: { 'content-type': 'application/x-www-form-urlencoded' },
         })
-        if (data.data) {
-            if (data.data.success) {
+        if (data.data && data.data.success) {
+            // let data_1phut = data.data.data
+            // let time = data_1phut.StartTime
+            // let timestamp_start = new Date(time).getTime();
 
-                let data_1phut = data.data.data
-                let time = data_1phut.StartTime
-                let timestamp_start = new Date(time).getTime();
+            // let EndTime = timestamp_start + 60000
+            // let ServiceTime = new Date(data_1phut.ServiceTime).getTime();
 
-                let EndTime = timestamp_start + 60000 * 3
-                let ServiceTime = new Date(data_1phut.ServiceTime).getTime();
+            // runAtFutureTime(EndTime, ServiceTime, data_1phut.IssueNumber, bot);
 
-                runAtFutureTime(EndTime, ServiceTime, data_1phut.IssueNumber, bot);
-            } else {
-                setTimeout(function () {
-                    test(bot)
-                }, 60000);
+            // runAtFutureTime(data_1phut.EndTime, data_1phut.ServiceTime, data_1phut.IssueNumber, bot);
+            let data_1phut = data.data.data
+            let time = data_1phut.StartTime
+            let timestamp_start = new Date(time).getTime();
+
+            let EndTime = timestamp_start + 60000
+            let ServiceTime = new Date(data_1phut.ServiceTime).getTime();
+
+            const timeToWait = EndTime - ServiceTime;
+            if (timeToWait > 4000) {
+                //  gọi hàm đặt cược
+
+                await check_dk(data_1phut.IssueNumber, bot)
             }
+            if (timeToWait > 0) {
 
+                // Sử dụng setTimeout để đợi đến thời gian cụ thể
+                timeout = timeToWait + 3000
+
+            } else {
+                // Nếu timestamp đã qua, bạn có thể xử lý ở đây nếu cần
+                timeout = 1000
+            }
         } else {
-            setTimeout(function () {
-                test(bot)
-            }, 60000);
+            timeout = 60000
+
+        }
+    } catch (e) {
+        console.log('loi test : ', e)
+        timeout = 5000
+
+    }
+    first_time = true
+    setTimeout(function () {
+        test(bot)
+    }, timeout);
+
+}
+
+
+async function guitinnhantunggroup(gameslist, bot, total, issuenumber) {
+    try {
+        let list_thang_da_chon = await db("lichsu_ma_group")
+            .select('*').where('status', 0)
+            .andWhere("type", "5phut")
+            .andWhere("name", "trxhash")
+            .andWhere("xoso", "NONE")
+        // .andWhere('issuenumber', IssueNumber_old)
+
+
+        let update = false
+        for (let item of list_thang_da_chon) {
+            let gan_nhat = gameslist.filter(e => e.IssueNumber == item.issuenumber)
+            if (gan_nhat && gan_nhat.length > 0) {
+                let Number_one = parseInt(gan_nhat[0].Number)
+                let ketqua = Number_one > 4 ? "big" : "small"
+                if (update == false) {
+                    if (list_thang_da_chon.filter(e => e.issuenumber == gan_nhat[0].IssueNumber).length == list_thang_da_chon.length) {
+                        await db('lichsu_ma_group').update({
+                            "xoso": ketqua,
+                            status: 1
+                        }).where("type", "5phut")
+                            .andWhere("name", "trxhash")
+                            .andWhere('issuenumber', gan_nhat[0].IssueNumber)
+                        update = true
+                    } else {
+                        await db('lichsu_ma_group').update({
+                            "xoso": ketqua,
+                            status: 1
+                        }).where("type", "5phut")
+                            .andWhere("name", "trxhash")
+                            .andWhere('issuenumber', gan_nhat[0].IssueNumber)
+                    }
+                    await delay(500)
+                }
+                let data_copy = await db("copytinhieu_trxhash").select("*").where('start', 1).andWhere("type", "5").andWhere("id_group", item.group_id).first()
+                if (!data_copy) {
+                    continue
+                }
+                let chienluocvon = JSON.parse(data_copy.chienlucvon)
+              
+
+                if (item.dudoan == ketqua) {
+                    //  gửi tin nhắn thắng
+                    bot.sendMessage(item.group_id, "🔊 🟢 THẮNG")
+
+                    await tonghopphien(data_copy, true, item, chienluocvon.length, bot)
+                    await delay(500)
+                } else {
+                    //  gửi tin nhắn thua
+                    // (chienluocvon.length - 1)
+                    // if (data_copy.status == 1) {
+                    //     guigaytoicacuser(chienluocvon.length, bot)
+                    // }
+                    bot.sendMessage(item.group_id, "🔊 🟡 THUA")
+                    if (item.chienluocvon_index >= (chienluocvon.length - 1)) {
+                        await delay(500)
+                        await tonghopphien(data_copy, true, item, chienluocvon.length, bot)
+                        //  gãy rồi
+                        if (data_copy.status == 1) {
+                            guigaytoicacuser(chienluocvon.length, bot)
+                        }
+                    }
+                }
+            }
+        }
+        await delay(2000)
+        let check_curent = await db("lichsu_ma_group").select('*')
+            .where("issuenumber", issuenumber)
+            .andWhere("type", "5phut")
+            .andWhere("name", "trxhash")
+            .first()
+        if (check_curent) {
+            return
+        }
+
+        let list = await db("copytinhieu_trxhash").select("*").where('start', 1).andWhere("type", "5")
+        for (let data_copy of list) {
+            let dudoan = ""
+            let dk_trung = ""
+
+            if (data_copy && data_copy.chienluocdata) {
+                let check_dk = JSON.parse(data_copy.chienluocdata)
+
+                for (let element of check_dk) {
+                    // 3L_N  2L2N_N
+                    let check = element.slice(0, element.length - 2);
+
+                    let check2 = total.slice(0, check.length);
+
+                    if (check === check2) {
+                        //  đúng dk
+                        // vào lệnh
+                        let last = element.slice(element.length - 1, element.length)
+                        if (last == "N") {
+                            dudoan = "small"
+                        } else {
+                            dudoan = "big"
+                        }
+                        dk_trung = check
+                        // "issuenumber": issuenumber,
+                        // "dudoan": dudoan,
+                        // "ketqua": "NONE",
+                        // "dieukien": data_copy.chienluocdata,
+                        // "dk_trung": dk_trung,
+                        // "xoso": false,// false , "small";"big"
+                        // "betcount": value_bet_coppy //   betcount: Mat
+                        let tim_kiem = await db('lichsu_ma_group').select('*')
+                            .where('group_id', data_copy.id_group)
+                            .andWhere("type", "5phut")
+                            .andWhere("name", "trxhash")
+                            .andWhere("status", "1")
+                            .orderBy('id', 'desc')
+                            .first()
+                        let chienluocvon_index = 0
+                        let session_moi
+                        let chienluocvon = JSON.parse(data_copy.chienlucvon)
+
+                        if (tim_kiem && tim_kiem.dudoan) {
+                            if (tim_kiem.dudoan == tim_kiem.xoso) {
+                                //  ket quả đúng r
+                                //   reset sesion
+                                session_moi = randomstring.generate({
+                                    length: 12,
+                                    charset: 'alphabetic'
+                                });
+                                chienluocvon_index = 0
+
+                            } else {
+                                //  cộng thêm
+                                let old_index = tim_kiem.chienluocvon_index
+                                if (old_index >= (chienluocvon.length - 1)) {
+                                    //  gãy rồi
+                                    session_moi = randomstring.generate({
+                                        length: 12,
+                                        charset: 'alphabetic'
+                                    });
+                                    chienluocvon_index = 0
+                                } else {
+                                    session_moi = tim_kiem.session
+                                    chienluocvon_index = old_index + 1
+                                }
+                            }
+
+                        } else {
+
+                            session_moi = randomstring.generate({
+                                length: 12,
+                                charset: 'alphabetic'
+                            });
+                        }
+
+                        let dai = dudoan == 'big' ? "LỚN" : "NHỎ"
+                        bot.sendMessage(data_copy.id_group, `🧏‍♀  ${dai} ${Math.round(parseInt(chienluocvon[chienluocvon_index]))}!
+Kỳ xổ (${issuenumber})`)
+                        await db("lichsu_ma_group").insert({
+                            "issuenumber": issuenumber,
+                            type: "5phut",
+                            "dudoan": dudoan,
+                            group_id: data_copy.id_group,
+                            "ketqua": "NONE",
+                            "dk_trung": check,
+                            "xoso": "NONE",
+                            "chienluocvon_index": chienluocvon_index,
+                            "betcount": Math.round(parseInt(chienluocvon[chienluocvon_index])),
+                            name: "trxhash",
+                            session: session_moi,
+                            status: 0
+
+                        })
+                        break
+                    }
+                    //   9359237.64 :9359237.64 9349237.64
+                }
+                await delay(1000)
+
+
+            }
         }
 
     } catch (e) {
-        console.log('loi ', e)
-        await delay(5000)
-        test(bot)
+        console.log("gui tn group ", e)
+
     }
 
 
-
-}
-function runAtFutureTime(targetTimestamp, currentTimestamp, issuenumber, bot) {
-    // Lấy timestamp hiện tại
-    // Tính thời gian cần đợi (tính bằng miligiây)
-
-    const timeToWait = targetTimestamp - currentTimestamp;
-    if (timeToWait > 4000 && first_time) {
-        //  gọi hàm đặt cược
-
-        check_dk(issuenumber, bot)
-    }
-    if (timeToWait > 0) {
-        // Sử dụng setTimeout để đợi đến thời gian cụ thể
-        first_time = true
-        setTimeout(function () {
-            test(bot)
-        }, timeToWait + 3000);
-    } else {
-        // Nếu timestamp đã qua, bạn có thể xử lý ở đây nếu cần
-
-        test(bot)
-    }
 }
 
 async function check_dk(issuenumber, bot) {
-    let list = await db(table).select("*")
-        .where("status", 1)
-        .andWhere('chienluoc_id', '<>', 0)
-        .andWhere("trxhash5", 1)
-        .andWhere("chienluocdata", "<>", "NONE")
-        .andWhere("chienluoc", "<>", "NONE")
-        .andWhere("activeacc", 1)
-    //  .where('status_trade', 1)
 
-
-    let list2 = await db(table).select("*")
-        .where("status", 1)
-        .andWhere('coppy', "on")
-        .andWhere("trxhash5", 1)
-        .andWhere("doigay", "off")
-        .andWhere("chienluoc", "<>", "NONE")
-        .andWhere("chienluocdata", "NONE")
-        .andWhere("activeacc", 1)
-
-    let data_copy = await db('copytinhieu_trxhash').select('*').where('status', 1).first()
-    if (data_copy) {
-        let list_copy = list2.map(e => {
-            e.chienluoc_id = 100
-            e.chienluocdata = data_copy.chienluocdata
-            e.chienluocdata_goc = data_copy.chienluocdata_goc
-            e.copystatus = true
-            return e
-        })
-        list = list.concat(list_copy)
-    }
-
-
-    let list_lich_su = await axios.post("https://bdguubdg.com/api/webapi/GetTRXNoaverageEmerdList", {
+    try {
+        let list = []
+      let list_lich_su = await axios.post("https://bdguubdg.com/api/webapi/GetTRXNoaverageEmerdList", {
         typeid: 15,
         pageno: 1,
         language: "vi"
@@ -160,138 +359,97 @@ async function check_dk(issuenumber, bot) {
     })
 
 
-    if (list_lich_su.data && list_lich_su.data.data && list_lich_su.data.success) {
 
-        let { gameslist } = list_lich_su.data.data;
-        //  ["3L_N","3N_L"]
-        let total = await xacdinhlichsu(gameslist, bot)
-        let vaolenhcopy = false
-        let dudoan = ""
-        let dk_trung = ""
-        let value_bet_coppy = 0
-        if (data_copy && data_copy.chienluocdata) {
-            let check_dk = JSON.parse(data_copy.chienluocdata)
+        if (list_lich_su.data && list_lich_su.data.data && list_lich_su.data.success) {
+            let { gameslist } = list_lich_su.data.data;
+            //  ["3L_N","3N_L"]
 
-            for (let element of check_dk) {
-                // 3L_N  2L2N_N
-                let check = element.slice(0, element.length - 2);
 
-                let check2 = total.slice(0, check.length);
-
-                if (check === check2) {
-                    //  đúng dk
-                    // vào lệnh
-                    let last = element.slice(element.length - 1, element.length)
-                    if (last == "N") {
-                        dudoan = 'small'
-                    } else {
-                        dudoan = "big"
-                    }
-                    dk_trung = check
-                    vaolenhcopy = true
-                    break
-                }
-                //   9359237.64 :9359237.64 9349237.64
+            let total = await xacdinhlichsu(gameslist, bot)
+            guitinnhantunggroup(gameslist, bot, total, issuenumber)
+            let trybonhotam = await db('bonhotam').select('*').where('issuenumber', issuenumber).andWhere('type', 'trxhash5').andWhere("status", 1).first()
+            if (trybonhotam) {
+                return
             }
 
-            if (vaolenhcopy) {
+            list = await db(table).select("*")
+                .where("status", 1)
+                .andWhere('chienluoc_id', '<>', 0)
+                .andWhere("trxhash5", 1)
+                .andWhere("chienluocdata", "<>", "NONE")
+                .andWhere("chienluoc", "<>", "NONE")
+                .andWhere("activeacc", 1)
+            //  .where('status_trade', 1)
 
-                phien_thu = phien_thu.map(e => {
-                    if (e.ketqua == "NONE") {
-                        let ketqu = gameslist.filter(el => el.IssueNumber == e.issuenumber)
-                        if (ketqu && ketqu.length == 1) {
-                            let ketqua = ketqu[0];
-                            let ketquaxoso = ketqua.Number > 4 ? "big" : "small"
-                            if (e.dudoan == ketquaxoso) {
-                                e.ketqua = true
-                            } else {
-                                e.ketqua = false
-                            }
-                            e.xoso = ketquaxoso
-                        }
-                    }
+            let list2 = await db(table).select("*")
+                .where("status", 1)
+                .andWhere('coppy', "on")
+                .andWhere("doigay", "off")
+                .andWhere("trxhash5", 1)
+                .andWhere("chienluoc", "<>", "NONE")
+                .andWhere("chienluocdata", "NONE")
+                .andWhere("activeacc", 1)
+
+            let data_copy = await db('copytinhieu_trxhash').select('*').where('status', 1).andWhere("type", "5").first()
+            if (data_copy) {
+                let list_copy = list2.map(e => {
+                    e.chienluoc_id = 100
+                    e.chienluocdata = data_copy.chienluocdata
+                    e.chienluocdata_goc = data_copy.chienluocdata_goc
+                    e.copystatus = true
                     return e
                 })
-                let chienluocvon = JSON.parse(data_copy.chienlucvon)
-                let ketqua_last = phien_thu[phien_thu.length - 1]
-                //  xem kết quả trước đó ntn
-                if (phien_thu.length == 0) {
-                    chienluocvon_index = 0
-                } else {
-                    if (ketqua_last.ketqua == "NONE") {
-                        //     chưa có ket quả
-                        vaolenhcopy = false
-                    } else {
-                        if (ketqua_last.ketqua) {
-                            //  kì vừa rồi thắng
-                            //   hết 1 phiên chốt phiên
-                            chienluocvon_index = 0
-                            tonghopphien(phien_thu, data_copy.chienluocdata, 0)
-                            phien_thu = []
-                        } else {
-                            //  kì vừa rồi thua
-                            if (chienluocvon_index >= (chienluocvon.length - 1)) {
-                                chienluocvon_index = 0
-                                // gãy  hết 1 phiên
-                                guigaytoicacuser(bot, chienluocvon.length)
-                                tonghopphien(phien_thu, data_copy.chienluocdata, 1)
-                                phien_thu = []
-                            } else {
-                                chienluocvon_index++
-                                //  
-                            }
-                        }
+                list = list.concat(list_copy)
+            }
+
+
+
+            await delay(1000)
+            for (let item of list) {
+
+                let json = JSON.parse(item.chienluocdata)
+
+                for (let element of json) {
+                    // 3L_N  2L2N_N
+                    let check = element.slice(0, element.length - 2);
+
+                    let check2 = total.slice(0, check.length);
+
+                    if (check === check2) {
+                        //  đúng dk
+                        // vào lệnh
+                        await vaolenhtaikhoan(item, element, issuenumber, bot)
+                        break
                     }
+                    //   9359237.64 :9359237.64 9349237.64
                 }
 
-                value_bet_coppy = Math.round(parseInt(chienluocvon[chienluocvon_index]))
-                phien_thu.push({
-                    "issuenumber": issuenumber,
-                    "dudoan": dudoan,
-                    "ketqua": "NONE",
-                    "dieukien": data_copy.chienluocdata,
-                    "dk_trung": dk_trung,
-                    "xoso": false,// false , "small";"big"
-                    "betcount": value_bet_coppy //   betcount: Math.round(parseInt(chienluoc_von[data_bet[item.usersname]]) 
-                })
-            }
-        }
-        await delay(1000)
-        for (let item of list) {
-            let json = JSON.parse(item.chienluocdata)
-
-            for (let element of json) {
-                // 3L_N  2L2N_N
-                let check = element.slice(0, element.length - 2);
-
-                let check2 = total.slice(0, check.length);
-
-                if (check === check2) {
-                    //  đúng dk
-                    // vào lệnh
-
-                    vaolenhtaikhoan(item, element, issuenumber, bot)
-                    break
-                }
-                //   9359237.64 :9359237.64 9349237.64
             }
 
+
         }
 
-    }
-    let arr = Object.keys(data_loi_nhuan)
-    let list_user = list.map(e => e.usersname)
+        let arr = Object.keys(data_loi_nhuan)
+        let list_user = list.map(e => e.usersname)
+        for (let el of arr) {
+            if (list_user.includes(el)) {
 
-    for (let el of arr) {
-        if (list_user.includes(el)) {
-
-        } else {
-
-            delete data_loi_nhuan[el]
-            delete data_bet[el]
+            } else {
+                delete data_loi_nhuan[el]
+                delete data_bet[el]
+            }
         }
+    } catch (e) {
+        console.log('loi vao lenh ', e)
     }
-
+    if (bonhotam[issuenumber] && bonhotam[issuenumber].length > 0) {
+        await db("bonhotam").insert({
+            issuenumber: issuenumber,
+            type: 'trxhash5',
+            data: JSON.stringify(bonhotam[issuenumber]),
+            status: 1
+        })
+    }
 
 
 }
@@ -312,110 +470,102 @@ exports.runbot = async function (bot) {
 
 }
 
-function convertdata(data) {
-    let text = ""
-    let current = ""
-    let convert = data.split("").reverse().join("")
-    for (let item of convert) {
-        if (item === 'N') {
-            current = "N"
-            text = text + "N"
-        }
-        if (item === 'L') {
-            current = "L"
-            text = text + "L"
-        }
-        if (item !== "N" && item !== "L" && item !== '1') {
-            let number = Number(item)
 
-            for (let i = 1; i < number; i++) {
-                text = text + current
+async function vaolenhtaikhoan(item, element, issuenumber, bot) {
+    try {
+        let last = element.slice(element.length - 1, element.length)
+        let chienluoc_von = item.chienluoc.split(',')
+        if (!data_bet[item.usersname]) {
+            data_bet[item.usersname] = 0
+        }
+        let data = {
+            uid: item.UserId,
+            sign: item.Sign,
+            gametype: 2,
+            typeid: 15,
+            language: "vi",
+            amount: "1000",
+            betcount: Math.round(parseInt(chienluoc_von[data_bet[item.usersname]]) / 1000),
+            issuenumber: issuenumber
+
+        }
+
+        if (last == "N") {
+            if (item.cainguoc == 'on') {
+                data.selecttype = "big"
+            } else {
+                data.selecttype =  "small"
+            }
+
+        } else {
+            if (item.cainguoc == 'on') {
+                data.selecttype =  "small"
+            } else {
+                data.selecttype = "big"
             }
 
         }
-    }
-    return text
-}
-async function vaolenhtaikhoan(item, element, issuenumber, bot) {
-    let last = element.slice(element.length - 1, element.length)
-    let chienluoc_von = item.chienluoc.split(',')
 
-    if (!data_bet[item.usersname]) {
-        data_bet[item.usersname] = 0
-    }
-
-    let data = {
-        uid: item.UserId,
-        sign: item.Sign,
-        gametype: 2,
-        typeid: 15,
-        language: "vi",
-        amount: "1000",
-        betcount: Math.round(parseInt(chienluoc_von[data_bet[item.usersname]]) / 1000),
-        issuenumber: issuenumber
-
-    }
-
-    if (last == "N") {
-        data.selecttype = "small"
-    } else {
-        data.selecttype = "big"
-    }
-
-    let result = await axios.post("https://bdguubdg.com/api/webapi/GameTRXBetting", data, {
+        let result = await axios.post("https://bdguubdg.com/api/webapi/GameTRXBetting", data, {
         headers: { 'content-type': 'application/x-www-form-urlencoded' },
     })
+        if (result.data) {
 
-    if (result.data) {
+            if (result.data && result.data.data && result.data.code == 0 && result.data.success) {
+                if (bonhotam[issuenumber]) {
+                    data.id = item.id
+                    data.chatId = item.tele_id
+                    data.usersname = item.usersname
+                    data.lodung = item.lodung
+                    data.loidung = item.loidung
+                    data.caidca = item.caidca
+                    data.chienluoc_von = chienluoc_von
+                    bonhotam[issuenumber].push(data)
+                } else {
+                    data.id = item.id
+                    data.chatId = item.tele_id
+                    data.usersname = item.usersname
+                    data.lodung = item.lodung
+                    data.loidung = item.loidung
+                    data.caidca = item.caidca
+                    data.chienluoc_von = chienluoc_von
+                    bonhotam[issuenumber] = [data]
+                }
 
-        if (result.data && result.data.data && result.data.code == 0 && result.data.success) {
-            if (bonhotam[issuenumber]) {
-                data.id = item.id
-                data.chatId = item.tele_id
-                data.usersname = item.usersname
-                data.lodung = item.lodung
-                data.loidung = item.loidung
-                data.caidca = item.caidca
-                data.chienluoc_von = chienluoc_von
-                bonhotam[issuenumber].push(data)
+                bot.sendMessage(item.tele_id, `✅ Đã đặt cược TRX Hash 5 ${data.selecttype == "big" ? "Lớn" : "Nhỏ"} - ${data.betcount}000đ - Kỳ xổ ${issuenumber}`,)
             } else {
-                data.id = item.id
-                data.chatId = item.tele_id
-                data.usersname = item.usersname
-                data.lodung = item.lodung
-                data.loidung = item.loidung
-                data.caidca = item.caidca
-                data.chienluoc_von = chienluoc_von
-                bonhotam[issuenumber] = [data]
-            }
+                //  đặt cược lỗi
+                let msg = result.data.msg
+                if (msg == "Số tiền không đủ") {
+                    await db(table).update('trxhash5', 0).where('id', item.id)
+                    bot.sendMessage(chatId, `❌ Dừng copy vì lý do: Số tiền không đủ
+Kỳ này: ${issuenumber}`)
 
-            bot.sendMessage(item.tele_id, `✅ Đã đặt cược Trx Hash 5 ${data.selecttype == "big" ? "Lớn" : "Nhỏ"} - ${data.betcount}000đ - Kỳ xổ ${issuenumber}`,)
+                }
+                if (msg == "sign error") {
+                    await db(table).update('trxhash5', 0).where('id', item.id)
+                    bot.sendMessage(chatId, `❌ Dừng copy vì lý do: Tài khoản đã đăng xuất
+Kỳ này: ${issuenumber}`)
+
+                }
+
+
+            }
         }
+
+    } catch (e) {
+        console.log("loi vao lenh ko duoc")
     }
 
 
-    // uid: 245906
-    // sign: 34880B75749433B82F161E60998F716BC3E3091A7A2173FC74A49874E2309D43
-    // amount: 10000
-    // betcount: 1
-    // gametype: 2
-    // selecttype: big
-    // typeid: 1
-    // issuenumber: 20231125010853
-    // language: vi
-    //  task còn chưa hoàn thành
-    //  cái size bet tang lên khi thua
-    //  dừng lỗ dừng lời
-    // thêm các mục khác
-    //  tính lợi nhuận
-    //  đợi gãy
+
 
 
 }
 function delay(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
-
+// "Số tiền không đủ" "sign error"
 async function ketqua_run_bot(ketqua, item, bot, Number_one) {
     for (let element of bonhotam[item.IssueNumber]) {
         await delay(200)
@@ -434,12 +584,10 @@ async function ketqua_run_bot(ketqua, item, bot, Number_one) {
                 }
 
             } else {
-
                 data_bet[element.usersname] = 0
-
             }
 
-            bot.sendMessage(element.chatId, `🟢 Chúc mừng bạn đã thắng ${Math.round(parseInt(element.betcount) * 0.96 * 1000)}đ Trx Hash 5 kì ${element.issuenumber}
+            bot.sendMessage(element.chatId, `🟢 Chúc mừng bạn đã thắng ${Math.round(parseInt(element.betcount) * 0.96 * 1000)}đ TRX Hash 5 kì ${element.issuenumber}
 Tổng lợi nhuận: ${data_loi_nhuan[element.usersname]}đ`)
             // await db('lichsu_ma').insert({
             //     "uid": element.uid,
@@ -480,12 +628,10 @@ Tổng lợi nhuận: ${data_loi_nhuan[element.usersname]}đ`)
                     data_bet[element.usersname] = data_bet[element.usersname] + 1
                 }
 
-
             } else {
                 data_bet[element.usersname] = 0
-
             }
-            bot.sendMessage(element.chatId, `🔴 Rất tiếc bạn đã thua ${element.betcount}000đ Trx Hash 5 kì ${element.issuenumber}`)
+            bot.sendMessage(element.chatId, `🔴 Rất tiếc bạn đã thua ${element.betcount}000đ TRX Hash 5 kì ${element.issuenumber}`)
             // await db('lichsu_ma').insert({
             //     "uid": element.uid,
             //     "usersid": element.id,
@@ -512,11 +658,19 @@ Tổng lợi nhuận: ${data_loi_nhuan[element.usersname]}đ`)
         }
     }
     delete bonhotam[item.IssueNumber]
+    await db("bonhotam").update('status', 0).where('issuenumber', item.IssueNumber).andWhere('type', 'trxhash5').andWhere("status", 1)
 }
 async function xacdinhlichsu(gameslist, bot) {
     let total = "";
     for (let item of gameslist) {
-        let Number_one = parseInt(item.Number)
+        let Number_one =  parseInt(item.Number)
+        if (!bonhotam[item.IssueNumber]) {
+            let trybonhotam = await db('bonhotam').select('*').where('issuenumber', item.IssueNumber).andWhere('type', 'trxhash5').andWhere("status", 1).first()
+            if (trybonhotam) {
+                bonhotam[trybonhotam.issuenumber] = JSON.parse(trybonhotam.data)
+            }
+        }
+
         if (bonhotam[item.IssueNumber] && bonhotam[item.IssueNumber].length > 0) {
             let ketqua = Number_one > 4 ? "big" : 'small'
             await ketqua_run_bot(ketqua, item, bot, Number_one)

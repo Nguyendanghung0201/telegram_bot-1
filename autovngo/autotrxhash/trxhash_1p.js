@@ -132,7 +132,7 @@ async function check_dk(issuenumber, bot) {
     let list2 = await db(table).select("*")
         .where("status", 1)
         .andWhere('coppy', "on")
-        .andWhere("trxhash1", 1)
+        .andWhere("trxhash1", 1) //trxhash1
         .andWhere("doigay", "off")
         .andWhere("chienluoc", "<>", "NONE")
         .andWhere("chienluocdata", "NONE")

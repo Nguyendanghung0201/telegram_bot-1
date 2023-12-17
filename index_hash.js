@@ -2,7 +2,7 @@
 const TelegramBot = require('node-telegram-bot-api');
 
 
-const TrxHash = require("./autovngo/autotrxhash/trxhash_1p")
+const TrxHash = require("./autovngo/autotrxhash/trxhash_1p_v2")
 const TrxHash3 = require("./autovngo/autotrxhash/trxhash_3p")
 const TrxHash5 = require("./autovngo/autotrxhash/trxhash_5p")
 const TrxHash10 = require("./autovngo/autotrxhash/trxhash_10p")
@@ -10,6 +10,7 @@ const TrxHash10 = require("./autovngo/autotrxhash/trxhash_10p")
 
 const token = '6892138707:AAGz46hXNs1WBzTs0WmjgW6BDkZkl9I8deA';
 const adminGroup = require('./admingroup')
+console.log(" ------------------- bắt đầu bot TRX Hash ---------------------------")
 // Create a bot that uses 'polling' to fetch new updates
 const bot = new TelegramBot(token, { polling: true });
 const axios = require("axios")
