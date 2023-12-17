@@ -8,6 +8,7 @@ const Vn_go_5p = require("./autovngo/autovn/Vn_go_5p_v2");
 const Vn_go_10p = require("./autovngo/autovn/Vn_go_10p_v2");
 
 const token = '6440229642:AAEof69qp6bllVpxXJ6s_u84On2lGfkE3mI';
+console.log(" ------------------- bắt đầu bot VN GO---------------------------")
 const adminGroup = require('./admingroup')
 // Create a bot that uses 'polling' to fetch new updates
 const bot = new TelegramBot(token, { polling: true });
