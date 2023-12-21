@@ -333,4 +333,12 @@ bot.on('message', async (msg) => {
 });
 Vn_go_1p.runbot(bot)
 
+cron.schedule('0 * * * *', async () => {
+    // Hàm bạn muốn thực hiện mỗi giờ
+    console.log('Chạy hàm mỗi giờ');
+    await db("lichsu_ma_group").del().where('created_at', '<', db.raw('NOW() - INTERVAL 3 HOUR'))
+    await db("lichsu_tong_hop").del().where('created_at', '<', db.raw('NOW() - INTERVAL 4 HOUR'))
+    await db("bonhotam").del().where('created_at', '<', db.raw('NOW() - INTERVAL 1 HOUR'))
+  });
+
 
