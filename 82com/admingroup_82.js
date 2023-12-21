@@ -193,7 +193,7 @@ async function setuptinhieugroup(chatId, array, bot, messageId, text, table_copy
             chienluocdata: JSON.stringify(list),
             chienluocdata_goc: JSON.stringify(list_tin_hieu),
             datatext: removeNonAlphanumeric(datatext),
-            type: listfirst[2]
+            type: "1"
         })
         bot.sendMessage(chatId, "✅ Thêm tín hiệu thành công", {
             reply_to_message_id: messageId
