@@ -38,7 +38,7 @@ const replyMarkup = {
 // Listen for any kind of message. There are different kinds of
 // messages.
 const help = require('./82com/help82/vngohelp_82')
-const Res = require("./json");
+const Res = require("./json_82");
 bot.on('channel_post', (msg) => {
     if(msg.text =='/check id'){
         bot.sendMessage(msg.chat.id, "ID group là "+msg.chat.id)

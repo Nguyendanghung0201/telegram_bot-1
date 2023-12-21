@@ -20,7 +20,7 @@ function removeNonAlphanumeric(inputString) {
     return resultString;
   }
 
-const Res = require("../../json");
+const Res = require("../../json_82");
 
 const axios = require('axios')
 
