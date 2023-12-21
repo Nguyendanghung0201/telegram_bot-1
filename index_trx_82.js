@@ -1,41 +1,60 @@
-//6976536755:AAGgO9iTFbHbftXpuWg6aA7bnma37vlPrW4
+// 6653970781:AAH5ymXN4mjcMlNwb90lAfmIW7WsFyfG8kY
+
 const TelegramBot = require('node-telegram-bot-api');
 
 
+const TrxHash = require("./82com/auto82/trx_1p_82")
 
 
-const D5_go_1p = require("./autovngo/auto5dgo/5d_go_1p");
-const D5_go_3p = require("./autovngo/auto5dgo/5d_go_3p");
-const D5_go_5p = require("./autovngo/auto5dgo/5d_go_5p");
-const D5_go_10p = require("./autovngo/auto5dgo/5d_go_10p");
-// replace the value below with the Telegram token you receive from @BotFather
-console.log('------------------- bắt đầu bot 5DGO---------------------------')
-const token = '6976536755:AAGgO9iTFbHbftXpuWg6aA7bnma37vlPrW4';
+
+const token ="6286008139:AAFt-rtQ2-3cT4spIwQ_FEK_B0jEIAUoV28" ;
 const adminGroup = require('./admingroup')
+console.log(" ------------------- bắt đầu bot TRX Hash 82COM---------------------------")
 // Create a bot that uses 'polling' to fetch new updates
 const bot = new TelegramBot(token, { polling: true });
 const axios = require("axios")
+const replyMarkup = {
+    keyboard: [
+        [
+            'Bắt đầu',
+            'Cài DCA Thua'
+        ],
+        [
+            "Đăng Nhập",
+            "Cài Ngược",
+            "Chốt lời/lỗ"
+        ],
+        [
+            "Chiến lược",
+            "Bật copy",
+            "Lịch sử"
+        ],
+        [
+            "Cài công thức",
+            "Bật đợi gãy"
+        ]
 
+    ],
+
+};
 // Listen for any kind of message. There are different kinds of
 // messages.
-const help = require('./helpvngo/d5gohelp')
+const help = require('./82com/help82/trxhashhelp_82')
 const Res = require("./json");
-
 bot.on('channel_post', (msg) => {
     if (msg.text == '/check id') {
         bot.sendMessage(msg.chat.id, "ID group là " + msg.chat.id)
     }
 
 });
-
 bot.on('message', async (msg) => {
-    const chatId = msg.chat.id;
-    let type = msg.chat?.type
 
+    let type = msg.chat?.type
+    const chatId = msg.chat.id;
     const messageId = msg.message_id;
     // send a message to the chat acknowledging receipt of their message
     let text = msg.text ? msg.text : false
-    if (type == 'group' || type == "supergroup") {
+    if (type == 'group' || type =="supergroup") {
         if (text) {
             let check = text[0]
             if (check == '/') {
@@ -47,11 +66,10 @@ bot.on('message', async (msg) => {
                     })
                 }
             }
-            if (chatId == -1002043847040 && (check == '/' || check == "A")) {
+            if (chatId ==-1002121629635 && (check == '/' || check=="A") ) {
 
-                return adminGroup.admingroup(chatId, msg, text, bot, messageId, "users_telegram_d5go", "copytinhieu_d5go")
+                return adminGroup.admingroup(chatId, msg, text, bot, messageId,"users_telegram_trxhash" ,"copytinhieu_trxhash")
             }
-
         }
         return
 
@@ -63,7 +81,7 @@ bot.on('message', async (msg) => {
     if (text) {
         if (text.includes('Login') || text.toLocaleLowerCase().includes('login')) {
             // đăng nhập
-            help.login_telegram(text, chatId, bot, messageId, name, userLink)
+            help.login_telegram(text, chatId, bot, messageId, name,userLink)
         } else if (text.includes('/THEMCT') || text.includes('/themct')) {
             //  thêm công thức vào 
 
@@ -101,32 +119,32 @@ bot.on('message', async (msg) => {
             }
 
         }
-        else if (text.includes('/ADD') || text.includes('/Add') || text.includes('/add')) {
-            //  chọn theo công thức nào
-            if (checklogin && checklogin.activeacc == 0) {
-                return bot.sendMessage(chatId, "Tài khoản của bạn chưa được active, Liên hệ Hỗ trợ ")
-            }
-            if (checklogin) {
-                help.addthemso(text, chatId, bot, checklogin, messageId)
-            } else {
-                bot.sendMessage(chatId, Res.dangnhap, {
-                    reply_to_message_id: messageId,
-                })
-            }
+        // else if (text.includes('/ADD') || text.includes('/Add') || text.includes('/add')) {
+        //     //  chọn theo công thức nào
+        //     if (checklogin && checklogin.activeacc == 0) {
+        //         return bot.sendMessage(chatId, "Tài khoản của bạn chưa được active, Liên hệ Hỗ trợ ")
+        //     }
+        //     if (checklogin) {
+        //         help.addthemso(text, chatId, bot, checklogin, messageId)
+        //     } else {
+        //         bot.sendMessage(chatId, Res.dangnhap, {
+        //             reply_to_message_id: messageId,
+        //         })
+        //     }
 
-        }
-        else if (text.includes('/STOP') || text.includes('/stop')) {
-            //  chọn theo công thức nào
+        // }
+        // else if (text.includes('/STOP') || text.includes('/stop')) {
+        //     //  chọn theo công thức nào
 
-            if (checklogin) {
-                help.stopthemso(text, chatId, bot, checklogin, messageId)
-            } else {
-                bot.sendMessage(chatId, Res.dangnhap, {
-                    reply_to_message_id: messageId,
-                })
-            }
+        //     if (checklogin) {
+        //         help.stopthemso(text, chatId, bot, checklogin, messageId)
+        //     } else {
+        //         bot.sendMessage(chatId, Res.dangnhap, {
+        //             reply_to_message_id: messageId,
+        //         })
+        //     }
 
-        }
+        // }
         else if (text.includes('SLTP') || text.includes('sltp')) {
             //   chốt lời cắt lỗi
 
@@ -141,19 +159,6 @@ bot.on('message', async (msg) => {
         else {
             switch (text) {
                 case "/START":
-                    // code block
-                    if (checklogin) {
-                        help.batdau(text, chatId, bot, checklogin, messageId)
-                    } else {
-                        Res.send_dang_nhap(name, chatId, messageId, bot)
-
-                        // bot.sendMessage(chatId, Res.dangnhap, {
-                        //     reply_to_message_id: messageId,
-                        // })
-                    }
-
-                    break;
-                case "/start":
                     // code block
                     if (checklogin) {
                         help.batdau(text, chatId, bot, checklogin, messageId)
@@ -329,39 +334,4 @@ bot.on('message', async (msg) => {
 
 });
 
-D5_go_1p.runbot(bot)
-D5_go_3p.runbot(bot)
-D5_go_5p.runbot(bot)
-D5_go_10p.runbot(bot)
-var cron = require('node-cron');
-let db = require('knex')({
-    client: 'mysql',
-    connection: {
-        host: '127.0.0.1',
-        port: 3306,
-        user: 'root',
-        password: 'PokerVn@123P',
-        database: 'bot_telegram'
-    }
-})
-async function thutest(){
-    await db("lichsu_ma_group").del().where('created_at', '<', db.raw('NOW() - INTERVAL 1 DAY'))
-    await db("lichsu_tong_hop").del().where('created_at', '<', db.raw('NOW() - INTERVAL 1 DAY'))
-}
-thutest()
-cron.schedule('0 0 * * *', async () => {
-    console.log('running every day at midnight');
-    // created_at
-      await db("lichsu_ma_group").del().where('created_at', '<', db.raw('NOW() - INTERVAL 1 DAY'))
-      await db("lichsu_tong_hop").del().where('created_at', '<', db.raw('NOW() - INTERVAL 1 DAY'))
-      await db("bonhotam").del().where('created_at', '<', db.raw('NOW() - INTERVAL 1 DAY'))
-});
-
-cron.schedule('0 * * * *', async () => {
-    // Hàm bạn muốn thực hiện mỗi giờ
-    console.log('Chạy hàm mỗi giờ');
-    await db("lichsu_ma_group").del().where('created_at', '<', db.raw('NOW() - INTERVAL 3 HOUR'))
-    await db("lichsu_tong_hop").del().where('created_at', '<', db.raw('NOW() - INTERVAL 4 HOUR'))
-    await db("bonhotam").del().where('created_at', '<', db.raw('NOW() - INTERVAL 1 HOUR'))
-  });
-  
+TrxHash.runbot(bot)
