@@ -332,7 +332,17 @@ bot.on('message', async (msg) => {
 
 });
 Vn_go_1p.runbot(bot)
-
+var cron = require('node-cron');
+let db = require('knex')({
+    client: 'mysql',
+    connection: {
+        host: '127.0.0.1',
+        port: 3306,
+        user: 'root',
+        password: 'PokerVn@123P',
+        database: 'bot_telegram_82'
+    }
+})
 cron.schedule('0 * * * *', async () => {
     // Hàm bạn muốn thực hiện mỗi giờ
     console.log('Chạy hàm mỗi giờ');
