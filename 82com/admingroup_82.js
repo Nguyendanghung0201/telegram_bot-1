@@ -361,7 +361,7 @@ QUản lý Vốn: ${text_von}
 exports.admingroup = async function (chatId, msg, text, bot, messageId, table, table_copy) {
     try {
         let array = text.split("\n")
-
+        console.log(array ,text )
         if (array.length > 0) {
 
             let key_work = array[0]
