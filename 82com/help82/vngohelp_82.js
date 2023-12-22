@@ -205,7 +205,7 @@ exports.batdau = async function (text, chatId, bot, checklogin, messageId) {
         let text_cong_thuc = ""
 
         if (checklogin.vngo1) {
-            list_task_run = list_task_run + "| Vn-Go 1"
+            list_task_run = list_task_run + "Vn-Go 1"
         }
         // if (checklogin.vngo3) {
         //     list_task_run = list_task_run + " | Vn-Go 3"
@@ -247,7 +247,7 @@ exports.batdau = async function (text, chatId, bot, checklogin, messageId) {
         // }
 
         // 
-        if (checklogin.chienluocdata != "NONE" && checklogin.chienluoc != "NONE" && list_task_run !== "") {
+        if (checklogin.chienluocdata != "NONE" && checklogin.chienluoc != "NONE" && checklogin.vngo1 ==1 ) {
             text_chienluoc = "THEO CÔNG THỨC " + checklogin.chienluoc_id
             let data = JSON.parse(checklogin.chienluocdata_goc)
             for (let element of data) {
@@ -256,7 +256,7 @@ exports.batdau = async function (text, chatId, bot, checklogin, messageId) {
 
         } else {
             if (checklogin.coppy == 'on') {
-                text_chienluoc = "BẬT"
+                text_chienluoc = "BẬT COPY"
             }
         }
 
@@ -502,11 +502,8 @@ exports.choncongthuc = async function (text, chatId, bot, checklogin, messageId)
             tele_id: checklogin.id
         }).first()
         if (check) {
-            let type = arrary[2].toLocaleLowerCase()
-            let input_time = arrary[3]
-            let time_auto = 0
-            let type_id = 0
-            let column = ""
+
+    
             // if (type == 'vn-go') {
             //     type_id = 1
             //     if (['1', '3', '5', '10'].includes(input_time)) {
@@ -553,7 +550,7 @@ exports.choncongthuc = async function (text, chatId, bot, checklogin, messageId)
                 let text = check3 + "_" + last
                 return text
             })
-            column = column + time_auto
+          
             let data_update = {
                 "chienluocdata": JSON.stringify(list),
                 "chienluocdata_goc": check.data,
@@ -583,7 +580,10 @@ exports.choncongthuc = async function (text, chatId, bot, checklogin, messageId)
 
 exports.battatdoigay = async function (text, chatId, bot, checklogin, messageId) {
     if (checklogin.doigay == 'off') {
-        await db(table).update('doigay', 'on').where('id', checklogin.id)
+        await db(table).update({
+            'doigay': 'on',
+             'vngo1':1
+        }).where('id', checklogin.id)
         // ✅ Đã đổi trạng thái chờ gãy sang ON
         checklogin.doigay = "on"
         let replyMarkup = getreplyMarkup(checklogin)
@@ -662,6 +662,7 @@ exports.batcopy = async function (text, chatId, bot, checklogin, messageId) {
         // ✅ Đã cập nhật trạng thái giao dịch sang BẬT COPY
         await db(table).update({
             'coppy': 'on',
+             'vngo1':1,
             "chienluoc_id": 0,
             "chienluocdata": "NONE",
             "chienluocdata_goc": "NONE",
