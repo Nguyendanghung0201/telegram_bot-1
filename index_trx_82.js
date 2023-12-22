@@ -53,7 +53,9 @@ bot.on('message', async (msg) => {
     const chatId = msg.chat.id;
     const messageId = msg.message_id;
     // send a message to the chat acknowledging receipt of their message
+    
     let text = msg.text ? msg.text : false
+    console.log(msg, text)
     if (type == 'group' || type =="supergroup") {
         if (text) {
             let check = text[0]
