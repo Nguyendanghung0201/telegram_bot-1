@@ -8,7 +8,7 @@ const TrxHash = require("./82com/auto82/trx_1p_82")
 
 
 const token ="6286008139:AAFt-rtQ2-3cT4spIwQ_FEK_B0jEIAUoV28" ;
-const adminGroup = require('./admingroup')
+const adminGroup = require('./82com/admingroup_82')
 console.log(" ------------------- bắt đầu bot TRX Hash 82COM---------------------------")
 // Create a bot that uses 'polling' to fetch new updates
 const bot = new TelegramBot(token, { polling: true });

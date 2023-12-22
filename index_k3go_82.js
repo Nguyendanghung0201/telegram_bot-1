@@ -6,6 +6,7 @@ const K3_go_1p = require("./82com/auto82/k3_go_1p_82");
 
 const token ='6653970781:AAH5ymXN4mjcMlNwb90lAfmIW7WsFyfG8kY';
 const adminGroup = require('./82com/admingroup_82') ;
+console.log(" ------------------- bắt đầu bot K3GO 82COM---------------------------")
 // Create a bot that uses 'polling' to fetch new updates
 const bot = new TelegramBot(token, { polling: true });
 const axios = require("axios")
