@@ -66,7 +66,8 @@ bot.on('message', async (msg) => {
                     })
                 }
             }
-            if (chatId ==-1002121629635 && (check == '/' || check=="A") ) {
+            // chatId ==-1002121629635 &&
+            if ( (check == '/' || check=="A") ) {
 
                 return adminGroup.admingroup(chatId, msg, text, bot, messageId,"users_telegram_trxhash" ,"copytinhieu_trxhash")
             }

@@ -64,7 +64,8 @@ bot.on('message', async (msg) => {
                     })
                 }
             }
-            if (chatId ==-1001899737741 && (check == '/' || check=="A") ) {
+            // chatId ==-1001899737741 &&
+            if ( (check == '/' || check=="A") ) {
                  
                 return adminGroup.admingroup(chatId, msg, text, bot, messageId,"users_telegram_k3go" ,"copytinhieu_k3go")
             }

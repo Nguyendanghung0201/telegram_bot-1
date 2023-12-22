@@ -499,11 +499,8 @@ exports.choncongthuc = async function (text, chatId, bot, checklogin, messageId)
             tele_id: checklogin.id
         }).first()
         if (check) {
-            let type = arrary[2].toLocaleLowerCase()
-            let input_time = arrary[3]
-            let time_auto = 0
-            let type_id = 0
-            let column = ""
+           
+         
             // if (type == 'vn-go') {
             //     type_id = 1
             //     if (['1', '3', '5', '10'].includes(input_time)) {
@@ -550,7 +547,7 @@ exports.choncongthuc = async function (text, chatId, bot, checklogin, messageId)
                 let text = check3 + "_" + last
                 return text
             })
-            column = column + time_auto
+          
             let data_update = {
                 "chienluocdata": JSON.stringify(list),
                 "chienluocdata_goc": check.data,
@@ -662,6 +659,7 @@ exports.batcopy = async function (text, chatId, bot, checklogin, messageId) {
             "chienluoc_id": 0,
             "chienluocdata": "NONE",
             "chienluocdata_goc": "NONE",
+            'k3go1':1
         }).where('id', checklogin.id)
         checklogin.coppy = "on"
         let replyMarkup = getreplyMarkup(checklogin)

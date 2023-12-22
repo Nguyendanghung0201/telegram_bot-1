@@ -263,7 +263,7 @@ exports.batdau = async function (text, chatId, bot, checklogin, messageId) {
 
         } else {
             if (checklogin.coppy == 'on') {
-                text_chienluoc = "BẬT"
+                text_chienluoc = "BẬT COPY"
             }
         }
 
@@ -671,12 +671,11 @@ exports.batcopy = async function (text, chatId, bot, checklogin, messageId) {
             "chienluoc_id": 0,
             "chienluocdata": "NONE",
             "chienluocdata_goc": "NONE",
+            "trxhash1":1
         }).where('id', checklogin.id)
         checklogin.coppy = "on"
         let replyMarkup = getreplyMarkup(checklogin)
-        bot.sendMessage(chatId, `✅ Đã cập nhật trạng thái giao dịch sang BẬT COPY
-<code style="color:blue">/ADD Trx 3</code> <i>để chọn thêm xổ số Trx hash thời gian 3 phút cho lệnh copy</i>
-<code style="color:blue">/STOP Trx 3</code> <i>để chọn dừng xổ số Trx hash thời gian 3 phút cho lệnh copy</i>`, {
+        bot.sendMessage(chatId, `✅ Đã cập nhật trạng thái giao dịch sang BẬT COPY`, {
             reply_to_message_id: messageId,
             reply_markup: replyMarkup,
             parse_mode: "HTML"
@@ -700,11 +699,7 @@ exports.caicongthuc = async function (text, chatId, bot, checklogin, messageId) 
     let congthuc = `<b>CÀI CÔNG THỨC</b>
 
 <b><u>Chọn công thức:</u></b> <code style="color:blue">/CT [stt] [name] [time]</code>
-<b>Ví dụ:</b> <code style="color:blue">/CT 1 Trx 1</code> <i>để chọn công thức 1 xổ Trx hash thời gian 1 phút</i>
-              <code style="color:blue">/CT 1 Trx 3</code> <i>để chọn công thức 1 xổ Trx hash thời gian 3 phút</i>
-              <code style="color:blue">/CT 1 Trx 5</code> <i>để chọn công thức 1 xổ Trx hash thời gian 5 phút</i>
-              <code style="color:blue">/ADD Trx 3</code> <i>để chọn thêm xổ Trx thời gian 3 phút cho công thức đang chọn</i>
-              <code style="color:blue">/STOP Trx 3</code> <i>để chọn dừng xổ Trx thời gian 3 phút cho công thức đang chọn</i>
+<b>Ví dụ:</b> <code style="color:blue">/CT 1</code> <i>để chọn công thức 1 xổ Trx hash thời gian 1 phút</i>
 🔸 Chú ý: Chọn công thức sẽ tự động bật Đánh theo công thức 
 có thể chạy nhiều số khác nhau tại một thời điểm.        
 chỉ có thể áp dụng một công thức tại một thời điểm cho nhiều số khác nhau
