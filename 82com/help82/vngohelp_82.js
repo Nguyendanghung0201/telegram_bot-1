@@ -668,9 +668,7 @@ exports.batcopy = async function (text, chatId, bot, checklogin, messageId) {
         }).where('id', checklogin.id)
         checklogin.coppy = "on"
         let replyMarkup = getreplyMarkup(checklogin)
-        bot.sendMessage(chatId, `✅ Đã cập nhật trạng thái giao dịch sang BẬT COPY
-<code style="color:blue">/ADD Vn-Go 3</code> <i>để chọn thêm xổ số K3-Go thời gian 3 phút cho lệnh copy</i>
-<code style="color:blue">/STOP Vn-Go 3</code> <i>để chọn dừng xổ số K3-Go thời gian 3 phút cho lệnh copy</i>`, {
+        bot.sendMessage(chatId, `✅ Đã cập nhật trạng thái giao dịch sang BẬT COPY`, {
             reply_to_message_id: messageId,
             reply_markup: replyMarkup,
             parse_mode: "HTML"
@@ -694,12 +692,7 @@ exports.caicongthuc = async function (text, chatId, bot, checklogin, messageId) 
     let congthuc = `<b>CÀI CÔNG THỨC</b>
 
 <b><u>Chọn công thức:</u></b> <code style="color:blue">/CT [stt] [name] [time]</code>
-<b>Ví dụ:</b> <code style="color:blue">/CT 1 Vn-Go 1</code> <i>để chọn công thức 1 xổ Vn-Go thời gian 1 phút</i>
-              <code style="color:blue">/CT 1 Vn-Go 3</code> <i>để chọn công thức 1 xổ Vn-Go thời gian 3 phút</i>
-              <code style="color:blue">/CT 1 Vn-Go 5</code> <i>để chọn công thức 1 xổ Vn-Go thời gian 5 phút</i>
-              <code style="color:blue">/CT 1 Vn-Go 10</code> <i>để chọn công thức 1 xổ Vn-Go thời gian 10 phút</i>
-              <code style="color:blue">/ADD Vn-Go 3</code> <i>để chọn thêm xổ Vn-Go thời gian 3 phút cho công thức đang chọn</i>
-              <code style="color:blue">/STOP Vn-Go 3</code> <i>để chọn dừng xổ Vn-Go thời gian 3 phút cho công thức đang chọn</i>
+<b>Ví dụ:</b> <code style="color:blue">/CT 1</code> <i>để chọn công thức 1 xổ Vn-Go thời gian 1 phút</i>
 🔸 Chú ý: Chọn công thức sẽ tự động bật Đánh theo công thức 
 có thể chạy nhiều số khác nhau tại một thời điểm.        
 chỉ có thể áp dụng một công thức tại một thời điểm cho nhiều số khác nhau
