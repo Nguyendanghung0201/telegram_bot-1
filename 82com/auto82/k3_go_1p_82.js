@@ -79,7 +79,7 @@ async function tonghopphien(data_copy, gay, tim_kiem, tinhieu, bot) {
 
             let soduong = Math.round((item.lai * 0.96 - item.lo) * 100) / 100
 
-            text = text + `🕗 ${item.currentTime}: Phiên ${sophien_ban_dau} -${soduong > 0 ? " -THẮNG 🟢" : "THUA 🟡"}  ${soduong}\n`
+            text = text + `🕗 ${item.currentTime}: Phiên ${sophien_ban_dau} -${soduong > 0 ? " -THẮNG 🟢" : "THUA 🟡"}  ${soduong}k\n`
             sophien_ban_dau++
         }
 
@@ -298,7 +298,7 @@ async function guitinnhantunggroup(gameslist, bot, total, issuenumber) {
                         }
 
                         let dai = dudoan == 'H' ? "LỚN" : "NHỎ"
-                        bot.sendMessage(data_copy.id_group, `🧏‍♀  ${dai} ${Math.round(parseInt(chienluocvon[chienluocvon_index]))}!
+                        bot.sendMessage(data_copy.id_group, `🧏‍♀  ${dai} ${Math.round(parseInt(chienluocvon[chienluocvon_index]))}k!
 Kỳ xổ (${issuenumber})`)
                         await db("lichsu_ma_group").insert({
                             "issuenumber": issuenumber,

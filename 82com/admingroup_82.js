@@ -429,8 +429,9 @@ exports.admingroup = async function (chatId, msg, text, bot, messageId, table, t
                 return list(chatId, bot, messageId, table_copy)
             }
 
-            let arr = key_work.split(' ')
 
+            let arr = key_work.split(' ')
+console.log(array , key_work)
             // Active 12345 on
             if (arr[0] == "Active" && arr.length == 3) {
                 if (arr[2] == 'on') {
