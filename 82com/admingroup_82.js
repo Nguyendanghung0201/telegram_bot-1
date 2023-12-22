@@ -365,6 +365,7 @@ exports.admingroup = async function (chatId, msg, text, bot, messageId, table, t
         if (array.length > 0) {
 
             let key_work = array[0]
+            console.log(array , key_work)
 
             if (key_work.includes('/setup_bot')) {
                 array = array.map(e => {
