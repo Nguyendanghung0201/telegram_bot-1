@@ -55,7 +55,7 @@ bot.on('message', async (msg) => {
     // send a message to the chat acknowledging receipt of their message
     
     let text = msg.text ? msg.text : false
-    console.log(msg, text)
+
     if (type == 'group' || type =="supergroup") {
         if (text) {
             let check = text[0]
@@ -69,9 +69,9 @@ bot.on('message', async (msg) => {
                 }
             }
             // chatId ==-1002121629635 &&
-            console.log(check)
+     
             if (chatId == -4018572187 && (check == '/' || check=="A") ) {
-                 console.log(check ,text)  
+       
                 return adminGroup.admingroup(chatId, msg, text, bot, messageId,"users_telegram_trxhash" ,"copytinhieu_trxhash")
             }
         }

@@ -361,11 +361,11 @@ QUản lý Vốn: ${text_von}
 exports.admingroup = async function (chatId, msg, text, bot, messageId, table, table_copy) {
     try {
         let array = text.split("\n")
-        console.log(array ,text )
+  
         if (array.length > 0) {
 
             let key_work = array[0]
-            console.log(array , key_work)
+   
 
             if (key_work.includes('/setup_bot')) {
                 array = array.map(e => {
@@ -432,7 +432,7 @@ exports.admingroup = async function (chatId, msg, text, bot, messageId, table, t
 
 
             let arr = key_work.split(' ')
-console.log(array , key_work)
+
             // Active 12345 on
             if (arr[0] == "Active" && arr.length == 3) {
                 if (arr[2] == 'on') {
