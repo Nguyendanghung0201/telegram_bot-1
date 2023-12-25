@@ -15,7 +15,7 @@ let bonhotam = {
 let data_loi_nhuan = {
 
 }
-let data_tong_tien_cuoc={
+let data_tong_tien_cuoc = {
 
 }
 
@@ -68,18 +68,18 @@ async function tonghopphien(data_copy, gay, tim_kiem, tinhieu, bot) {
             "currentTime": currentTime
         })
         let result = await db("lichsu_tong_hop").select('*')
-        .where('group_id', data_copy.id_group).andWhere("type", 'vngo1')
-        .orderBy('id', 'desc')
-        .paginate({ perPage: 50, currentPage: 1 });
-        let list_send  = result.data
-        let total =result.pagination.total
+            .where('group_id', data_copy.id_group).andWhere("type", 'vngo1')
+            .orderBy('id', 'desc')
+            .paginate({ perPage: 50, currentPage: 1 });
+        let list_send = result.data
+        let total = result.pagination.total
 
         let text = `❇️ 𝐓𝐡ố𝐧𝐠 𝐤ê ${list_send.length} 𝐩𝐡𝐢ê𝐧 𝐠ầ𝐧 𝐧𝐡ấ𝐭  ....
     
 `;
-    let sophien_ban_dau= total -list_send.length+1
+        let sophien_ban_dau = total - list_send.length + 1
         for (let item of list_send.reverse()) {
-           
+
             let soduong = Math.round((item.lai * 0.96 - item.lo) * 100) / 100
 
             text = text + `🕗 ${item.currentTime}: Phiên ${sophien_ban_dau} -${soduong > 0 ? " -THẮNG 🟢" : "THUA 🟡"}  ${soduong}k\n`
@@ -188,7 +188,7 @@ async function guitinnhantunggroup(gameslist, bot, total, issuenumber) {
                     continue
                 }
                 let chienluocvon = JSON.parse(data_copy.chienlucvon)
-              
+
 
                 if (item.dudoan == ketqua) {
                     //  gửi tin nhắn thắng
@@ -494,10 +494,22 @@ async function vaolenhtaikhoan(item, element, issuenumber, bot) {
             }
 
         }
+        let result
+        if (data.betcount >= 1) {
+            result = await axios.post("https://82vn82vnapi.com/api/webapi/GameBetting", data, {
+                headers: { 'content-type': 'application/x-www-form-urlencoded' },
+            })
+        } else {
+            result = {
+                data: {
+                    code: 0,
+                    data: [],
+                    success: true
+                }
+            }
+        }
 
-        let result = await axios.post("https://82vn82vnapi.com/api/webapi/GameBetting", data, {
-            headers: { 'content-type': 'application/x-www-form-urlencoded' },
-        })
+
         if (result.data) {
 
             if (result.data && result.data.data && result.data.code == 0 && result.data.success) {
@@ -520,10 +532,10 @@ async function vaolenhtaikhoan(item, element, issuenumber, bot) {
                     data.chienluoc_von = chienluoc_von
                     bonhotam[issuenumber] = [data]
                 }
-                if(data_tong_tien_cuoc[item.usersname]){
-                    data_tong_tien_cuoc[item.usersname] = data_tong_tien_cuoc[item.usersname]+  data.betcount ;
-                }else{
-                    data_tong_tien_cuoc[item.usersname] =   data.betcount;
+                if (data_tong_tien_cuoc[item.usersname]) {
+                    data_tong_tien_cuoc[item.usersname] = data_tong_tien_cuoc[item.usersname] + data.betcount;
+                } else {
+                    data_tong_tien_cuoc[item.usersname] = data.betcount;
                 }
 
                 bot.sendMessage(item.tele_id, `✅ Đã đặt cược VN-Go  1 ${data.selecttype == "big" ? "Lớn" : "Nhỏ"} - ${data.betcount}000đ - Kỳ xổ ${issuenumber}`,)
@@ -583,7 +595,7 @@ async function ketqua_run_bot(ketqua, item, bot, Number_one) {
 
             bot.sendMessage(element.chatId, `🟢 Chúc mừng bạn đã thắng ${Math.round(parseInt(element.betcount) * 0.96 * 1000)}đ VN-Go  1 kì ${element.issuenumber}
 Tổng lợi nhuận: ${data_loi_nhuan[element.usersname]}đ
-Tổng tiền cược:  ${data_tong_tien_cuoc[element.usersname] ?data_tong_tien_cuoc[element.usersname] :''}đ`)
+Tổng tiền cược:  ${data_tong_tien_cuoc[element.usersname] ? data_tong_tien_cuoc[element.usersname] : ''}đ`)
             // await db('lichsu_ma').insert({
             //     "uid": element.uid,
             //     "usersid": element.id,

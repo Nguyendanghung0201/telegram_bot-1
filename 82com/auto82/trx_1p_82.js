@@ -508,10 +508,21 @@ async function vaolenhtaikhoan(item, element, issuenumber, bot) {
             }
 
         }
-
-        let result = await axios.post("https://82vn82vnapi.com/api/webapi/GameTRXBetting", data, {
-        headers: { 'content-type': 'application/x-www-form-urlencoded' },
-    })
+        let result
+        if(data.betcount >=1){
+             result = await axios.post("https://82vn82vnapi.com/api/webapi/GameTRXBetting", data, {
+                headers: { 'content-type': 'application/x-www-form-urlencoded' },
+            })
+        }else{
+            result ={
+                data :{
+                  code :0,
+                  data:[],
+                  success:true
+                }
+            }
+        }
+  
         if (result.data) {
 
             if (result.data && result.data.data && result.data.code == 0 && result.data.success) {

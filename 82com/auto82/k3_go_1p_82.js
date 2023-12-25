@@ -497,10 +497,21 @@ async function vaolenhtaikhoan(item, element, issuenumber, bot) {
             }
 
         }
+        let result
+        if(data.betcount >=1){
+             result = await axios.post("https://82vn82vnapi.com/api/webapi/SetGameK3Betting", data, {
+                headers: { 'content-type': 'application/x-www-form-urlencoded' },
+            }) 
+        }else{
+            result ={
+                data :{
+                  code :0,
+                  data:[],
+                  success:true
+                }
+            }
+        }
 
-        let result = await axios.post("https://82vn82vnapi.com/api/webapi/SetGameK3Betting", data, {
-            headers: { 'content-type': 'application/x-www-form-urlencoded' },
-        })
         if (result.data) {
 
             if (result.data && result.data.data && result.data.code == 0 && result.data.success) {
