@@ -596,7 +596,7 @@ async function ketqua_run_bot(ketqua, item, bot, Number_one) {
 
             bot.sendMessage(element.chatId, `🟢 Chúc mừng bạn đã thắng ${Math.round(parseInt(element.betcount) * 0.96 * 1000)}đ K3-GO 1 kì ${element.issuenumber}
 Tổng lợi nhuận: ${data_loi_nhuan[element.usersname]}đ
-Tổng tiền cược:  ${data_tong_tien_cuoc[element.usersname] ?data_tong_tien_cuoc[element.usersname] :''}đ`)
+Tổng tiền cược:  ${data_tong_tien_cuoc[element.usersname] ?data_tong_tien_cuoc[element.usersname]+'000' :''}đ`)
             // await db('lichsu_ma').insert({
             //     "uid": element.uid,
             //     "usersid": element.id,
