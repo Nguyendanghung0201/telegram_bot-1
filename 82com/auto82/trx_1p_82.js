@@ -15,7 +15,9 @@ let bonhotam = {
 let data_loi_nhuan = {
 
 }
+let data_tong_tien_cuoc={
 
+}
 
 
 let chienluocvon_index = 0
@@ -437,6 +439,7 @@ async function check_dk(issuenumber, bot) {
             } else {
                 delete data_loi_nhuan[el]
                 delete data_bet[el]
+                delete data_tong_tien_cuoc[el]
             }
         }
     } catch (e) {
@@ -531,6 +534,11 @@ async function vaolenhtaikhoan(item, element, issuenumber, bot) {
                     data.chienluoc_von = chienluoc_von
                     bonhotam[issuenumber] = [data]
                 }
+                if(data_tong_tien_cuoc[item.usersname]){
+                    data_tong_tien_cuoc[item.usersname] = data_tong_tien_cuoc[item.usersname]+  data.betcount ;
+                }else{
+                    data_tong_tien_cuoc[item.usersname] =   data.betcount;
+                }
 
                 bot.sendMessage(item.tele_id, `✅ Đã đặt cược TRX Hash 1 ${data.selecttype == "big" ? "Lớn" : "Nhỏ"} - ${data.betcount}000đ - Kỳ xổ ${issuenumber}`,)
             } else {
@@ -588,7 +596,8 @@ async function ketqua_run_bot(ketqua, item, bot, Number_one) {
             }
 
             bot.sendMessage(element.chatId, `🟢 Chúc mừng bạn đã thắng ${Math.round(parseInt(element.betcount) * 0.96 * 1000)}đ TRX Hash 1 kì ${element.issuenumber}
-Tổng lợi nhuận: ${data_loi_nhuan[element.usersname]}đ`)
+Tổng lợi nhuận: ${data_loi_nhuan[element.usersname]}đ
+Tổng tiền cược:  ${data_tong_tien_cuoc[element.usersname] ?data_tong_tien_cuoc[element.usersname] :''}đ`)
             // await db('lichsu_ma').insert({
             //     "uid": element.uid,
             //     "usersid": element.id,
