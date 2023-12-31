@@ -411,10 +411,9 @@ exports.themcongthuc = async function (text, chatId, bot, checklogin, messageId)
 
     } else {
         let kiemtra = await db(table_chien_luoc).select('*').where('tele_id', checklogin.id)
-        if (kiemtra && kiemtra.length >= 15) {
-            return bot.sendMessage(chatId, "❌ Bạn đã cài tối đa 15 công thức", {
-                reply_to_message_id: messageId,
-            })
+        if (kiemtra && kiemtra.length >= 10) {
+            await db(table_chien_luoc).where('tele_id', checklogin.id).orderBy('id').limit(1).del()
+            
         }
         //  kiểm tra cú pháp công thức
         let check_ok = true

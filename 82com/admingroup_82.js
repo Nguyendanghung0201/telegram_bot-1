@@ -107,10 +107,10 @@ async function setuptinhieugroup(chatId, array, bot, messageId, text, table_copy
         }
         return check
     }).map(e => e.toUpperCase())
-    let quanlyvon = array.filter(e => e.includes("Quản lý vốn"))
+    let quanlyvon = array.filter(e => e.includes("|Quản lý vốn"))
 
-    if (quanlyvon.length != 1 || list_tin_hieu.length == 0) {
-        return bot.sendMessage(chatId, "❌ Cú pháp sai", {
+    if (quanlyvon.length != 0 || list_tin_hieu.length == 0) {
+        return bot.sendMessage(chatId, "❌ Cú pháp sai ❌", {
             reply_to_message_id: messageId
         })
     }
@@ -127,11 +127,11 @@ async function setuptinhieugroup(chatId, array, bot, messageId, text, table_copy
         return text
     })
     let listfirst = array[0].split(' ').filter(e => e)
-    if (listfirst.length != 2) {
-        return bot.sendMessage(chatId, "❌ Cú pháp sai", {
-            reply_to_message_id: messageId
-        })
-    }
+    // if (listfirst.length != 2) {
+    //     return bot.sendMessage(chatId, "❌ Cú pháp sai", {
+    //         reply_to_message_id: messageId
+    //     })
+    // }
     // if (!['1', '3', '5', '10'].includes(listfirst[2])) {
     //     return bot.sendMessage(chatId, "❌ Cú pháp sai", {
     //         reply_to_message_id: messageId
