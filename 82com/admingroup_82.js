@@ -109,7 +109,7 @@ async function setuptinhieugroup(chatId, array, bot, messageId, text, table_copy
     }).map(e => e.toUpperCase())
     let quanlyvon = array.filter(e => e.includes("|Quản lý vốn"))
 
-    if (quanlyvon.length != 0 || list_tin_hieu.length == 0) {
+    if (quanlyvon.length != 1 || list_tin_hieu.length == 0) {
         return bot.sendMessage(chatId, "❌ Cú pháp sai ❌", {
             reply_to_message_id: messageId
         })
